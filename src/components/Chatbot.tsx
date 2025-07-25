@@ -16,6 +16,26 @@ interface ChatbotProps {
 type OnboardingPhase = 'initial_question' | 'explaining_app' | 'awaiting_business_type' | 'awaiting_location' | 'ready_for_query';
 
 const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
+  // Function to clean bot responses
+  const cleanBotResponse = (text: string): string => {
+    // Remove ** symbols (bold markdown)
+    let cleaned = text.replace(/\*\*/g, '');
+    
+    // Remove emojis using Unicode ranges
+    cleaned = cleaned.replace(/[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, '');
+    
+    // Remove other common emoji ranges
+    cleaned = cleaned.replace(/[\u{1F900}-\u{1F9FF}]|[\u{1FA70}-\u{1FAFF}]/gu, '');
+    
+    // Remove bullet points with emojis (like 🔍, 🚀, etc.)
+    cleaned = cleaned.replace(/[🔍🚀🎯🔧💼🏢🌍]/gu, '');
+    
+    // Clean up extra whitespace
+    cleaned = cleaned.replace(/\s+/g, ' ').trim();
+    
+    return cleaned;
+  };
+
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: 1,
@@ -183,26 +203,6 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
     // Placeholder for PDF export functionality
     console.log('Exporting conversation to PDF...');
     alert('PDF export functionality will be implemented soon!');
-  };
-
-  // Function to clean bot responses
-  const cleanBotResponse = (text: string): string => {
-    // Remove ** symbols (bold markdown)
-    let cleaned = text.replace(/\*\*/g, '');
-    
-    // Remove emojis using Unicode ranges
-    cleaned = cleaned.replace(/[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, '');
-    
-    // Remove other common emoji ranges
-    cleaned = cleaned.replace(/[\u{1F900}-\u{1F9FF}]|[\u{1FA70}-\u{1FAFF}]/gu, '');
-    
-    // Remove bullet points with emojis (like 🔍, 🚀, etc.)
-    cleaned = cleaned.replace(/[🔍🚀🎯🔧💼🏢🌍]/gu, '');
-    
-    // Clean up extra whitespace
-    cleaned = cleaned.replace(/\s+/g, ' ').trim();
-    
-    return cleaned;
   };
 
   return (
