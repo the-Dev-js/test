@@ -36,20 +36,61 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
     };
 
     setMessages(prev => [...prev, userMessage]);
+    const currentInput = inputValue;
     setInputValue('');
     setIsLoading(true);
 
-    // Simulate AI response (we'll integrate with Qloo and Gemini later)
-    setTimeout(() => {
+    try {
+      // Call Supabase Edge Function
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+      
+      if (!supabaseUrl || !supabaseAnonKey) {
+        throw new Error('Supabase configuration missing. Please set up your Supabase environment variables.');
+      }
+
+      const response = await fetch(`${supabaseUrl}/functions/v1/chat-orchestrator`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${supabaseAnonKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: currentInput,
+          businessType: 'retail', // You can make this dynamic later
+          location: 'Canada', // You can make this dynamic later
+          context: 'general_inquiry'
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`API request failed: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
       const botMessage: ChatMessage = {
         id: messages.length + 2,
         type: 'bot',
-        content: "Thank you for your question! I'm analyzing the cultural preferences for your target market using Qloo's cultural intelligence data. This is a placeholder response - we'll integrate the real Qloo API and Gemini AI soon to provide you with detailed cultural insights and business recommendations.",
+        content: data.response || 'Sorry, I could not process your request at this time.',
         timestamp: new Date()
       };
+      
       setMessages(prev => [...prev, botMessage]);
+    } catch (error) {
+      console.error('Error calling chat orchestrator:', error);
+      
+      const errorMessage: ChatMessage = {
+        id: messages.length + 2,
+        type: 'bot',
+        content: `I apologize, but I'm having trouble connecting to my cultural intelligence services right now. This could be due to:\n\n• Supabase configuration not set up yet\n• API keys not configured\n• Network connectivity issues\n\nPlease check your Supabase setup and try again. In the meantime, I'd be happy to help you think through your cultural market research questions!`,
+        timestamp: new Date()
+      };
+      
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
       setIsLoading(false);
-    }, 2000);
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
