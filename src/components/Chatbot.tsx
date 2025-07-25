@@ -13,7 +13,7 @@ interface ChatbotProps {
   onBackToHome: () => void;
 }
 
-type OnboardingPhase = 'initial_question' | 'explaining_app' | 'ready_for_query';
+type OnboardingPhase = 'initial_question' | 'explaining_app' | 'awaiting_business_type' | 'awaiting_location' | 'ready_for_query';
 
 const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
   const [messages, setMessages] = useState<ChatMessage[]>([
@@ -27,6 +27,8 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [onboardingPhase, setOnboardingPhase] = useState<OnboardingPhase>('initial_question');
+  const [userBusinessType, setUserBusinessType] = useState<string | null>(null);
+  const [userLocation, setUserLocation] = useState<string | null>(null);
 
   const handleSendMessage = async () => {
     if (!inputValue.trim()) return;
@@ -55,16 +57,26 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
           timestamp: new Date()
         };
         setMessages(prev => [...prev, explanationMessage]);
-        setOnboardingPhase('ready_for_query');
+        // After explanation, ask for business type
+        setTimeout(() => {
+          const businessTypeMessage: ChatMessage = {
+            id: messages.length + 3,
+            type: 'bot',
+            content: "Perfect! Let's start by understanding your business better.\n\nWhat type of business do you have or are you planning to start? For example:\n• Restaurant or food service\n• Retail store (fashion, electronics, etc.)\n• Tech service or app\n• Consulting or professional service\n• Manufacturing\n• Or something else entirely\n\nJust describe your business in a few words! 🏢",
+            timestamp: new Date()
+          };
+          setMessages(prev => [...prev, businessTypeMessage]);
+          setOnboardingPhase('awaiting_business_type');
+        }, 1000);
       } else if (currentInput.includes('jump') || currentInput.includes('ready') || currentInput.includes('ask') || currentInput.includes('question') || currentInput.includes('no')) {
-        setOnboardingPhase('ready_for_query');
-        const readyMessage: ChatMessage = {
+        setOnboardingPhase('awaiting_business_type');
+        const businessTypeMessage: ChatMessage = {
           id: messages.length + 2,
           type: 'bot',
-          content: "Perfect! I'm ready to help you explore any market 🚀\n\nTo provide you with the most accurate cultural insights, please tell me:\n\n1. **Your business type** (e.g., fashion retail, restaurant, tech service, etc.)\n2. **The location** you want to explore (city, region, or country)\n3. **Your specific question** or what you'd like to know about that market\n\nFor example: \"I have a coffee shop and want to understand what Parisians prefer in their coffee culture\" or \"I'm launching a fitness app in Brazil - what are the local workout preferences?\"\n\nWhat would you like to explore?",
+          content: "Great! Let's dive right in 🚀\n\nFirst, tell me about your business. What type of business do you have or are you planning to start?\n\nFor example:\n• Restaurant or food service\n• Retail store (fashion, electronics, etc.)\n• Tech service or app\n• Consulting or professional service\n• Manufacturing\n• Or something else entirely\n\nJust describe your business in a few words! 🏢",
           timestamp: new Date()
         };
-        setMessages(prev => [...prev, readyMessage]);
+        setMessages(prev => [...prev, businessTypeMessage]);
       } else {
         // User input is unclear
         const clarificationMessage: ChatMessage = {
@@ -75,6 +87,30 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
         };
         setMessages(prev => [...prev, clarificationMessage]);
       }
+      setIsLoading(false);
+    } else if (onboardingPhase === 'awaiting_business_type') {
+      // Store the business type and ask for location
+      setUserBusinessType(currentInput);
+      const locationMessage: ChatMessage = {
+        id: messages.length + 2,
+        type: 'bot',
+        content: `Perfect! So you have a ${currentInput.toLowerCase()} business. That's exciting! 🎯\n\nNow, which location or market are you interested in exploring? This could be:\n\n• A specific city (e.g., \"Paris\", \"Tokyo\", \"New York\")\n• A country (e.g., \"France\", \"Japan\", \"Brazil\")\n• A region (e.g., \"Southeast Asia\", \"Northern Europe\")\n• Or even a neighborhood if you're thinking locally\n\nWhere would you like to expand or understand better? 🌍`,
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, locationMessage]);
+      setOnboardingPhase('awaiting_location');
+      setIsLoading(false);
+    } else if (onboardingPhase === 'awaiting_location') {
+      // Store the location and confirm readiness
+      setUserLocation(currentInput);
+      const readyMessage: ChatMessage = {
+        id: messages.length + 2,
+        type: 'bot',
+        content: `Excellent! I now understand that you have a ${userBusinessType?.toLowerCase()} business and you're interested in the ${currentInput} market. 🎉\n\nI'm ready to provide you with detailed cultural insights, local preferences, and actionable recommendations for this market.\n\nWhat specific question do you have about ${currentInput}? For example:\n• What are the local preferences and trends?\n• How should I adapt my products/services?\n• What marketing approaches work best there?\n• What cultural factors should I consider?\n\nFeel free to ask anything about expanding your ${userBusinessType?.toLowerCase()} business in ${currentInput}! 🚀`,
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, readyMessage]);
+      setOnboardingPhase('ready_for_query');
       setIsLoading(false);
     } else if (onboardingPhase === 'ready_for_query') {
       // User is ready to make actual queries - call the Edge Function
@@ -94,8 +130,8 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
           },
           body: JSON.stringify({
             message: inputValue, // Use original input, not lowercased
-            businessType: 'retail', // You can make this dynamic later
-            location: 'Canada', // You can make this dynamic later
+            businessType: userBusinessType || 'general business',
+            location: userLocation || 'global market',
             context: 'general_inquiry'
           })
         });
