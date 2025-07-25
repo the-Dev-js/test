@@ -91,10 +91,11 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
     } else if (onboardingPhase === 'awaiting_business_type') {
       // Store the business type and ask for location
       setUserBusinessType(currentInput);
+      const cleanedBusinessType = cleanBotResponse(`Perfect! So you have a ${currentInput.toLowerCase()} business. That's exciting!`);
       const locationMessage: ChatMessage = {
         id: messages.length + 2,
         type: 'bot',
-        content: `Perfect! So you have a ${currentInput.toLowerCase()} business. That's exciting! 🎯\n\nNow, which location or market are you interested in exploring? This could be:\n\n• A specific city (e.g., \"Paris\", \"Tokyo\", \"New York\")\n• A country (e.g., \"France\", \"Japan\", \"Brazil\")\n• A region (e.g., \"Southeast Asia\", \"Northern Europe\")\n• Or even a neighborhood if you're thinking locally\n\nWhere would you like to expand or understand better? 🌍`,
+        content: `${cleanedBusinessType}\n\nNow, which location or market are you interested in exploring? This could be:\n\n• A specific city (e.g., \"Paris\", \"Tokyo\", \"New York\")\n• A country (e.g., \"France\", \"Japan\", \"Brazil\")\n• A region (e.g., \"Southeast Asia\", \"Northern Europe\")\n• Or even a neighborhood if you're thinking locally\n\nWhere would you like to expand or understand better?`,
         timestamp: new Date()
       };
       setMessages(prev => [...prev, locationMessage]);
@@ -103,10 +104,11 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
     } else if (onboardingPhase === 'awaiting_location') {
       // Store the location and confirm readiness
       setUserLocation(currentInput);
+      const cleanedConfirmation = cleanBotResponse(`Excellent! I now understand that you have a ${userBusinessType?.toLowerCase()} business and you're interested in the ${currentInput} market.`);
       const readyMessage: ChatMessage = {
         id: messages.length + 2,
         type: 'bot',
-        content: `Excellent! I now understand that you have a ${userBusinessType?.toLowerCase()} business and you're interested in the ${currentInput} market. 🎉\n\nI'm ready to provide you with detailed cultural insights, local preferences, and actionable recommendations for this market.\n\nWhat specific question do you have about ${currentInput}? For example:\n• What are the local preferences and trends?\n• How should I adapt my products/services?\n• What marketing approaches work best there?\n• What cultural factors should I consider?\n\nFeel free to ask anything about expanding your ${userBusinessType?.toLowerCase()} business in ${currentInput}! 🚀`,
+        content: `${cleanedConfirmation}\n\nI'm ready to provide you with detailed cultural insights, local preferences, and actionable recommendations for this market.\n\nWhat specific question do you have about ${currentInput}? For example:\n• What are the local preferences and trends?\n• How should I adapt my products/services?\n• What marketing approaches work best there?\n• What cultural factors should I consider?\n\nFeel free to ask anything about expanding your ${userBusinessType?.toLowerCase()} business in ${currentInput}!`,
         timestamp: new Date()
       };
       setMessages(prev => [...prev, readyMessage]);
@@ -142,10 +144,13 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
 
         const data = await response.json();
         
+        // Clean the bot response to remove emojis and *** symbols
+        const cleanedResponse = cleanBotResponse(data.response || 'Sorry, I could not process your request at this time.');
+        
         const botMessage: ChatMessage = {
           id: messages.length + 2,
           type: 'bot',
-          content: data.response || 'Sorry, I could not process your request at this time.',
+          content: cleanedResponse,
           timestamp: new Date()
         };
         
@@ -180,39 +185,59 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
     alert('PDF export functionality will be implemented soon!');
   };
 
+  // Function to clean bot responses
+  const cleanBotResponse = (text: string): string => {
+    // Remove *** symbols
+    let cleaned = text.replace(/\*\*\*/g, '');
+    
+    // Remove ** symbols (bold markdown)
+    cleaned = cleaned.replace(/\*\*/g, '');
+    
+    // Remove emojis using Unicode ranges
+    cleaned = cleaned.replace(/[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, '');
+    
+    // Remove other common emoji ranges
+    cleaned = cleaned.replace(/[\u{1F900}-\u{1F9FF}]|[\u{1FA70}-\u{1FAFF}]/gu, '');
+    
+    // Clean up extra whitespace
+    cleaned = cleaned.replace(/\s+/g, ' ').trim();
+    
+    return cleaned;
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#F9FAFB] via-[#F9FAFB] to-[#F9FAFB]">
+    <div className="min-h-screen bg-[#F7F7F8]">
       {/* Header */}
       <motion.header
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white/90 backdrop-blur-sm border-b border-[#E5E7EB] sticky top-0 z-50"
+        className="bg-white shadow-sm border-b border-[#E5E7EB] sticky top-0 z-50"
       >
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <button
                 onClick={onBackToHome}
-                className="flex items-center gap-2 px-3 py-2 text-[#1877F2] hover:bg-[#F9FAFB] rounded-lg transition-colors duration-200"
+                className="flex items-center gap-2 px-3 py-1.5 text-[#1877F2] hover:bg-[#F9FAFB] rounded-md transition-colors duration-200"
               >
                 <ArrowLeft className="w-5 h-5" />
                 <span className="font-medium">Back to Home</span>
               </button>
               
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-r from-[#2563EB] to-[#1877F2] rounded-full flex items-center justify-center">
-                  <Bot className="w-6 h-6 text-white" />
+                <div className="w-8 h-8 bg-gradient-to-r from-[#2563EB] to-[#1877F2] rounded-full flex items-center justify-center">
+                  <Bot className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h1 className="text-xl font-bold text-[#111827]">TasteMatch Cultural AI</h1>
-                  <p className="text-sm text-[#1877F2]">Powered by Qloo & Gemini</p>
+                  <h1 className="text-lg font-semibold text-[#111827]">Cultural AI</h1>
+                  <p className="text-xs text-[#6B7280]">Powered by Qloo & Gemini</p>
                 </div>
               </div>
             </div>
             
             <button
               onClick={exportToPDF}
-              className="flex items-center gap-2 px-4 py-2 bg-[#1877F2] text-white rounded-lg hover:bg-[#2563EB] transition-colors duration-200"
+              className="flex items-center gap-2 px-3 py-1.5 bg-[#1877F2] text-white rounded-md hover:bg-[#2563EB] transition-colors duration-200 text-sm"
             >
               <Download className="w-4 h-4" />
               <span className="font-medium">Export PDF</span>
@@ -222,19 +247,19 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
       </motion.header>
 
       {/* Chat Container */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white rounded-2xl shadow-xl border border-[#E5E7EB] overflow-hidden">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div className="bg-white rounded-lg shadow-lg border border-[#E5E7EB] overflow-hidden">
           
           {/* Messages Area */}
-          <div className="h-[600px] overflow-y-auto p-6 space-y-6">
+          <div className="h-[calc(100vh-200px)] min-h-[500px] max-h-[700px] overflow-y-auto p-4 space-y-4">
             {messages.map((message) => (
               <motion.div
                 key={message.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
+                className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'} px-2`}
               >
-                <div className={`flex gap-3 max-w-[80%] ${message.type === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
+                <div className={`flex gap-3 max-w-[75%] ${message.type === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
                     message.type === 'user' 
                       ? 'bg-[#1877F2]' 
@@ -247,13 +272,13 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
                     )}
                   </div>
                   
-                  <div className={`rounded-2xl p-4 ${
+                  <div className={`rounded-lg p-3 ${
                     message.type === 'user'
                       ? 'bg-[#1877F2] text-white'
-                      : 'bg-[#F9FAFB] text-[#111827] border border-[#E5E7EB]'
+                      : 'bg-[#F7F7F8] text-[#111827]'
                   }`}>
                     <p className="text-sm leading-relaxed whitespace-pre-line">{message.content}</p>
-                    <p className={`text-xs mt-2 ${
+                    <p className={`text-xs mt-1.5 ${
                       message.type === 'user' ? 'text-blue-100' : 'text-[#6B7280]'
                     }`}>
                       {message.timestamp.toLocaleTimeString()}
@@ -270,15 +295,15 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
                 animate={{ opacity: 1, y: 0 }}
                 className="flex justify-start"
               >
-                <div className="flex gap-3">
+                <div className="flex gap-3 px-2">
                   <div className="w-8 h-8 bg-gradient-to-r from-[#2563EB] to-[#1877F2] rounded-full flex items-center justify-center">
                     <Sparkles className="w-4 h-4 text-white" />
                   </div>
-                  <div className="bg-[#F9FAFB] border border-[#E5E7EB] rounded-2xl p-4">
+                  <div className="bg-[#F7F7F8] rounded-lg p-3">
                     <div className="flex items-center gap-2">
                       <div className="flex space-x-1">
                         <motion.div
-                          animate={{ scale: [1, 1.2, 1] }}
+                          animate={{ scale: [1, 1.3, 1] }}
                           transition={{ duration: 0.6, repeat: Infinity, delay: 0 }}
                           className="w-2 h-2 bg-[#1877F2] rounded-full"
                         />
@@ -288,7 +313,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
                           className="w-2 h-2 bg-[#1877F2] rounded-full"
                         />
                         <motion.div
-                          animate={{ scale: [1, 1.2, 1] }}
+                          animate={{ scale: [1, 1.3, 1] }}
                           transition={{ duration: 0.6, repeat: Infinity, delay: 0.4 }}
                           className="w-2 h-2 bg-[#1877F2] rounded-full"
                         />
@@ -302,27 +327,27 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
           </div>
           
           {/* Input Area */}
-          <div className="border-t border-[#E5E7EB] p-6">
-            <div className="flex gap-4">
+          <div className="border-t border-[#E5E7EB] p-4 bg-white shadow-md">
+            <div className="flex gap-3">
               <div className="flex-1 relative">
                 <textarea
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
                   onKeyPress={handleKeyPress}
                   placeholder="Ask about cultural preferences, local tastes, or business opportunities..."
-                  className="w-full p-4 pr-12 border border-[#E5E7EB] rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-[#1877F2] focus:border-transparent text-[#111827] placeholder-[#6B7280]"
+                  className="w-full p-3 pr-12 border border-[#E5E7EB] rounded-lg max-h-40 focus:outline-none focus:ring-2 focus:ring-[#1877F2] focus:border-transparent text-[#111827] placeholder-[#6B7280] resize-y"
                   rows={3}
                   disabled={isLoading}
                 />
-                <div className="absolute bottom-3 right-3 flex items-center gap-2">
-                  <Globe className="w-4 h-4 text-[#6B7280]" />
+                <div className="absolute bottom-2 right-2 flex items-center gap-2">
+                  <Globe className="w-4 h-4 text-[#9CA3AF]" />
                 </div>
               </div>
               
               <button
                 onClick={handleSendMessage}
                 disabled={!inputValue.trim() || isLoading}
-                className="px-6 py-3 bg-gradient-to-r from-[#2563EB] to-[#1877F2] text-white rounded-xl hover:shadow-lg hover:shadow-[#1877F2]/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 font-medium"
+                className="px-4 py-2 bg-gradient-to-r from-[#2563EB] to-[#1877F2] text-white rounded-lg hover:shadow-lg hover:shadow-[#1877F2]/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 font-medium self-end"
               >
                 <Send className="w-4 h-4" />
                 <span>Send</span>
