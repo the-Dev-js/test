@@ -20,7 +20,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
     {
       id: 1,
       type: 'bot',
-      content: "Hello! 👋 I'm your Cultural AI Assistant, powered by Qloo API and advanced AI models.\n\nI can help you understand cultural preferences, local trends, and market opportunities anywhere in the world to expand your business successfully.\n\n**Would you like to:**\n\n🔍 **Learn more** about how I work and what I can do for your business?\n\n🚀 **Jump right in** and ask me a question about a specific market?\n\nJust let me know your preference!",
+      content: cleanBotResponse("Hello! 👋 I'm your Cultural AI Assistant, powered by Qloo API and advanced AI models.\n\nI can help you understand cultural preferences, local trends, and market opportunities anywhere in the world to expand your business successfully.\n\n**Would you like to:**\n\n🔍 **Learn more** about how I work and what I can do for your business?\n\n🚀 **Jump right in** and ask me a question about a specific market?\n\nJust let me know your preference!"),
       timestamp: new Date()
     }
   ]);
@@ -53,7 +53,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
         const explanationMessage: ChatMessage = {
           id: messages.length + 2,
           type: 'bot',
-          content: "Great! Let me explain how I can help your business succeed globally 🌍\n\n**🎯 What I Do:**\nI analyze cultural preferences, local trends, and consumer behaviors in any market worldwide. Think of me as your cultural intelligence consultant who helps you understand what makes each market unique.\n\n**🔧 How I Work:**\n• I use Qloo's cultural intelligence API to gather real-time data about local preferences\n• I combine this with advanced AI models (like Gemini) to provide actionable insights\n• I give you specific recommendations tailored to your business and target market\n\n**💼 Use Cases:**\n• **Retailers:** What products will resonate in Tokyo vs. Toronto?\n• **Restaurants:** What flavors and dining experiences do locals prefer?\n• **Services:** How do cultural values affect customer expectations?\n• **Marketing:** What messaging and channels work best locally?\n\n**🚀 Ready to explore a market?**\nTo give you the most relevant insights, I'll need to know:\n1. Your business type (e.g., fashion retail, restaurant, tech service)\n2. The location you're interested in (city, region, or country)\n3. Your specific question or challenge\n\nWhat market would you like to explore?",
+          content: cleanBotResponse("Great! Let me explain how I can help your business succeed globally 🌍\n\n**🎯 What I Do:**\nI analyze cultural preferences, local trends, and consumer behaviors in any market worldwide. Think of me as your cultural intelligence consultant who helps you understand what makes each market unique.\n\n**🔧 How I Work:**\n• I use Qloo's cultural intelligence API to gather real-time data about local preferences\n• I combine this with advanced AI models (like Gemini) to provide actionable insights\n• I give you specific recommendations tailored to your business and target market\n\n**💼 Use Cases:**\n• **Retailers:** What products will resonate in Tokyo vs. Toronto?\n• **Restaurants:** What flavors and dining experiences do locals prefer?\n• **Services:** How do cultural values affect customer expectations?\n• **Marketing:** What messaging and channels work best locally?\n\n**🚀 Ready to explore a market?**\nTo give you the most relevant insights, I'll need to know:\n1. Your business type (e.g., fashion retail, restaurant, tech service)\n2. The location you're interested in (city, region, or country)\n3. Your specific question or challenge\n\nWhat market would you like to explore?"),
           timestamp: new Date()
         };
         setMessages(prev => [...prev, explanationMessage]);
@@ -73,7 +73,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
         const businessTypeMessage: ChatMessage = {
           id: messages.length + 2,
           type: 'bot',
-          content: "Great! Let's dive right in 🚀\n\nFirst, tell me about your business. What type of business do you have or are you planning to start?\n\nFor example:\n• Restaurant or food service\n• Retail store (fashion, electronics, etc.)\n• Tech service or app\n• Consulting or professional service\n• Manufacturing\n• Or something else entirely\n\nJust describe your business in a few words! 🏢",
+          content: cleanBotResponse("Great! Let's dive right in 🚀\n\nFirst, tell me about your business. What type of business do you have or are you planning to start?\n\nFor example:\n• Restaurant or food service\n• Retail store (fashion, electronics, etc.)\n• Tech service or app\n• Consulting or professional service\n• Manufacturing\n• Or something else entirely\n\nJust describe your business in a few words! 🏢"),
           timestamp: new Date()
         };
         setMessages(prev => [...prev, businessTypeMessage]);
@@ -82,7 +82,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
         const clarificationMessage: ChatMessage = {
           id: messages.length + 2,
           type: 'bot',
-          content: "I'd love to help! Could you let me know if you'd like to:\n\n🔍 **Learn more** about how I work and what I can do\n🚀 **Ask a question** directly about a specific market\n\nJust type something like \"learn more\" or \"ask a question\" and I'll guide you accordingly!",
+          content: cleanBotResponse("I'd love to help! Could you let me know if you'd like to:\n\n🔍 **Learn more** about how I work and what I can do\n🚀 **Ask a question** directly about a specific market\n\nJust type something like \"learn more\" or \"ask a question\" and I'll guide you accordingly!"),
           timestamp: new Date()
         };
         setMessages(prev => [...prev, clarificationMessage]);
@@ -95,7 +95,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
       const locationMessage: ChatMessage = {
         id: messages.length + 2,
         type: 'bot',
-        content: `${cleanedBusinessType}\n\nNow, which location or market are you interested in exploring? This could be:\n\n• A specific city (e.g., \"Paris\", \"Tokyo\", \"New York\")\n• A country (e.g., \"France\", \"Japan\", \"Brazil\")\n• A region (e.g., \"Southeast Asia\", \"Northern Europe\")\n• Or even a neighborhood if you're thinking locally\n\nWhere would you like to expand or understand better?`,
+        content: cleanBotResponse(`${cleanedBusinessType}\n\nNow, which location or market are you interested in exploring? This could be:\n\n• A specific city (e.g., \"Paris\", \"Tokyo\", \"New York\")\n• A country (e.g., \"France\", \"Japan\", \"Brazil\")\n• A region (e.g., \"Southeast Asia\", \"Northern Europe\")\n• Or even a neighborhood if you're thinking locally\n\nWhere would you like to expand or understand better?`),
         timestamp: new Date()
       };
       setMessages(prev => [...prev, locationMessage]);
@@ -108,7 +108,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
       const readyMessage: ChatMessage = {
         id: messages.length + 2,
         type: 'bot',
-        content: `${cleanedConfirmation}\n\nI'm ready to provide you with detailed cultural insights, local preferences, and actionable recommendations for this market.\n\nWhat specific question do you have about ${currentInput}? For example:\n• What are the local preferences and trends?\n• How should I adapt my products/services?\n• What marketing approaches work best there?\n• What cultural factors should I consider?\n\nFeel free to ask anything about expanding your ${userBusinessType?.toLowerCase()} business in ${currentInput}!`,
+       content: cleanBotResponse(`${cleanedConfirmation}\n\nI'm ready to provide you with detailed cultural insights, local preferences, and actionable recommendations for this market.\n\nWhat specific question do you have about ${currentInput}? For example:\n• What are the local preferences and trends?\n• How should I adapt my products/services?\n• What marketing approaches work best there?\n• What cultural factors should I consider?\n\nFeel free to ask anything about expanding your ${userBusinessType?.toLowerCase()} business in ${currentInput}!`),
         timestamp: new Date()
       };
       setMessages(prev => [...prev, readyMessage]);
@@ -161,7 +161,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
         const errorMessage: ChatMessage = {
           id: messages.length + 2,
           type: 'bot',
-          content: `I apologize, but I'm having trouble connecting to my cultural intelligence services right now. This could be due to:\n\n• Supabase configuration not set up yet\n• API keys not configured\n• Network connectivity issues\n\nPlease check your Supabase setup and try again. In the meantime, I'd be happy to help you think through your cultural market research questions!`,
+         content: cleanBotResponse(`I apologize, but I'm having trouble connecting to my cultural intelligence services right now. This could be due to:\n\n• Supabase configuration not set up yet\n• API keys not configured\n• Network connectivity issues\n\nPlease check your Supabase setup and try again. In the meantime, I'd be happy to help you think through your cultural market research questions!`),
           timestamp: new Date()
         };
         
@@ -187,17 +187,17 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
 
   // Function to clean bot responses
   const cleanBotResponse = (text: string): string => {
-    // Remove *** symbols
-    let cleaned = text.replace(/\*\*\*/g, '');
-    
     // Remove ** symbols (bold markdown)
-    cleaned = cleaned.replace(/\*\*/g, '');
+    let cleaned = text.replace(/\*\*/g, '');
     
     // Remove emojis using Unicode ranges
     cleaned = cleaned.replace(/[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, '');
     
     // Remove other common emoji ranges
     cleaned = cleaned.replace(/[\u{1F900}-\u{1F9FF}]|[\u{1FA70}-\u{1FAFF}]/gu, '');
+    
+    // Remove bullet points with emojis (like 🔍, 🚀, etc.)
+    cleaned = cleaned.replace(/[🔍🚀🎯🔧💼🏢🌍]/gu, '');
     
     // Clean up extra whitespace
     cleaned = cleaned.replace(/\s+/g, ' ').trim();
