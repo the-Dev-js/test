@@ -13,17 +13,20 @@ interface ChatbotProps {
   onBackToHome: () => void;
 }
 
+type OnboardingPhase = 'initial_question' | 'explaining_app' | 'ready_for_query';
+
 const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: 1,
       type: 'bot',
-      content: "Bonjour ! 👋 Je suis votre Assistant IA Culturel, conçu pour vous aider à conquérir de nouveaux marchés grâce à l'intelligence culturelle.\n\n🎯 **Mon rôle :**\nJe vous fournis des insights culturels précis pour comprendre les préférences locales, les habitudes de consommation et les tendances émergentes, afin que votre entreprise puisse résonner authentiquement dans n'importe quel marché mondial.\n\n🔧 **Comment je fonctionne :**\nJe combine la puissance de l'API Qloo (spécialisée dans l'intelligence culturelle) avec des modèles de langage avancés comme Gemini. Vous me posez une question sur un marché spécifique, et je vous aide à découvrir des opportunités concrètes et à adapter votre stratégie.\n\n🚀 **Pour commencer :**\nDites-moi simplement quel est votre type d'entreprise (magasin, restaurant, service, etc.) et la région/ville que vous souhaitez explorer. Je m'occupe du reste !\n\nQuelle est votre première question sur l'expansion culturelle ? 🌍",
+      content: "Hello! 👋 I'm your Cultural AI Assistant, powered by Qloo API and advanced AI models.\n\nI can help you understand cultural preferences, local trends, and market opportunities anywhere in the world to expand your business successfully.\n\n**Would you like to:**\n\n🔍 **Learn more** about how I work and what I can do for your business?\n\n🚀 **Jump right in** and ask me a question about a specific market?\n\nJust let me know your preference!",
       timestamp: new Date()
     }
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [onboardingPhase, setOnboardingPhase] = useState<OnboardingPhase>('initial_question');
 
   const handleSendMessage = async () => {
     if (!inputValue.trim()) return;
@@ -40,56 +43,91 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
     setInputValue('');
     setIsLoading(true);
 
-    try {
-      // Call Supabase Edge Function
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-      
-      if (!supabaseUrl || !supabaseAnonKey) {
-        throw new Error('Supabase configuration missing. Please set up your Supabase environment variables.');
+    // Handle different onboarding phases
+    if (onboardingPhase === 'initial_question') {
+      // User is choosing between learning more or jumping in
+      if (currentInput.includes('learn') || currentInput.includes('more') || currentInput.includes('how') || currentInput.includes('what') || currentInput.includes('explain')) {
+        setOnboardingPhase('explaining_app');
+        const explanationMessage: ChatMessage = {
+          id: messages.length + 2,
+          type: 'bot',
+          content: "Great! Let me explain how I can help your business succeed globally 🌍\n\n**🎯 What I Do:**\nI analyze cultural preferences, local trends, and consumer behaviors in any market worldwide. Think of me as your cultural intelligence consultant who helps you understand what makes each market unique.\n\n**🔧 How I Work:**\n• I use Qloo's cultural intelligence API to gather real-time data about local preferences\n• I combine this with advanced AI models (like Gemini) to provide actionable insights\n• I give you specific recommendations tailored to your business and target market\n\n**💼 Use Cases:**\n• **Retailers:** What products will resonate in Tokyo vs. Toronto?\n• **Restaurants:** What flavors and dining experiences do locals prefer?\n• **Services:** How do cultural values affect customer expectations?\n• **Marketing:** What messaging and channels work best locally?\n\n**🚀 Ready to explore a market?**\nTo give you the most relevant insights, I'll need to know:\n1. Your business type (e.g., fashion retail, restaurant, tech service)\n2. The location you're interested in (city, region, or country)\n3. Your specific question or challenge\n\nWhat market would you like to explore?",
+          timestamp: new Date()
+        };
+        setMessages(prev => [...prev, explanationMessage]);
+        setOnboardingPhase('ready_for_query');
+      } else if (currentInput.includes('jump') || currentInput.includes('ready') || currentInput.includes('ask') || currentInput.includes('question') || currentInput.includes('no')) {
+        setOnboardingPhase('ready_for_query');
+        const readyMessage: ChatMessage = {
+          id: messages.length + 2,
+          type: 'bot',
+          content: "Perfect! I'm ready to help you explore any market 🚀\n\nTo provide you with the most accurate cultural insights, please tell me:\n\n1. **Your business type** (e.g., fashion retail, restaurant, tech service, etc.)\n2. **The location** you want to explore (city, region, or country)\n3. **Your specific question** or what you'd like to know about that market\n\nFor example: \"I have a coffee shop and want to understand what Parisians prefer in their coffee culture\" or \"I'm launching a fitness app in Brazil - what are the local workout preferences?\"\n\nWhat would you like to explore?",
+          timestamp: new Date()
+        };
+        setMessages(prev => [...prev, readyMessage]);
+      } else {
+        // User input is unclear
+        const clarificationMessage: ChatMessage = {
+          id: messages.length + 2,
+          type: 'bot',
+          content: "I'd love to help! Could you let me know if you'd like to:\n\n🔍 **Learn more** about how I work and what I can do\n🚀 **Ask a question** directly about a specific market\n\nJust type something like \"learn more\" or \"ask a question\" and I'll guide you accordingly!",
+          timestamp: new Date()
+        };
+        setMessages(prev => [...prev, clarificationMessage]);
       }
-
-      const response = await fetch(`${supabaseUrl}/functions/v1/chat-orchestrator`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${supabaseAnonKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          message: currentInput,
-          businessType: 'retail', // You can make this dynamic later
-          location: 'Canada', // You can make this dynamic later
-          context: 'general_inquiry'
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error(`API request failed: ${response.status}`);
-      }
-
-      const data = await response.json();
-      
-      const botMessage: ChatMessage = {
-        id: messages.length + 2,
-        type: 'bot',
-        content: data.response || 'Sorry, I could not process your request at this time.',
-        timestamp: new Date()
-      };
-      
-      setMessages(prev => [...prev, botMessage]);
-    } catch (error) {
-      console.error('Error calling chat orchestrator:', error);
-      
-      const errorMessage: ChatMessage = {
-        id: messages.length + 2,
-        type: 'bot',
-        content: `I apologize, but I'm having trouble connecting to my cultural intelligence services right now. This could be due to:\n\n• Supabase configuration not set up yet\n• API keys not configured\n• Network connectivity issues\n\nPlease check your Supabase setup and try again. In the meantime, I'd be happy to help you think through your cultural market research questions!`,
-        timestamp: new Date()
-      };
-      
-      setMessages(prev => [...prev, errorMessage]);
-    } finally {
       setIsLoading(false);
+    } else if (onboardingPhase === 'ready_for_query') {
+      // User is ready to make actual queries - call the Edge Function
+      try {
+        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+        const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+        
+        if (!supabaseUrl || !supabaseAnonKey) {
+          throw new Error('Supabase configuration missing. Please set up your Supabase environment variables.');
+        }
+
+        const response = await fetch(`${supabaseUrl}/functions/v1/chat-orchestrator`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${supabaseAnonKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            message: inputValue, // Use original input, not lowercased
+            businessType: 'retail', // You can make this dynamic later
+            location: 'Canada', // You can make this dynamic later
+            context: 'general_inquiry'
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error(`API request failed: ${response.status}`);
+        }
+
+        const data = await response.json();
+        
+        const botMessage: ChatMessage = {
+          id: messages.length + 2,
+          type: 'bot',
+          content: data.response || 'Sorry, I could not process your request at this time.',
+          timestamp: new Date()
+        };
+        
+        setMessages(prev => [...prev, botMessage]);
+      } catch (error) {
+        console.error('Error calling chat orchestrator:', error);
+        
+        const errorMessage: ChatMessage = {
+          id: messages.length + 2,
+          type: 'bot',
+          content: `I apologize, but I'm having trouble connecting to my cultural intelligence services right now. This could be due to:\n\n• Supabase configuration not set up yet\n• API keys not configured\n• Network connectivity issues\n\nPlease check your Supabase setup and try again. In the meantime, I'd be happy to help you think through your cultural market research questions!`,
+          timestamp: new Date()
+        };
+        
+        setMessages(prev => [...prev, errorMessage]);
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
