@@ -292,7 +292,7 @@ async function callOpenAI(prompt: string, apiKey: string): Promise<string> {
 }
 
 async function callGemini(prompt: string, apiKey: string): Promise<string> {
-  const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`, {
+  const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
