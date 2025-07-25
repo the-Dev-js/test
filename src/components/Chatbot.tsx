@@ -18,7 +18,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
     {
       id: 1,
       type: 'bot',
-      content: "Hello! I'm your Cultural AI Assistant powered by Qloo and Gemini. I'm here to help you understand local cultural preferences and discover new business opportunities. \n\nTo get started, please tell me:\n• Your business type (e.g., furniture store, fashion retailer, restaurant)\n• The location you want to explore (city, neighborhood, or region)\n\nLet's unlock the cultural insights of your target market! 🌍",
+      content: "Bonjour ! 👋 Je suis votre Assistant IA Culturel, conçu pour vous aider à conquérir de nouveaux marchés grâce à l'intelligence culturelle.\n\n🎯 **Mon rôle :**\nJe vous fournis des insights culturels précis pour comprendre les préférences locales, les habitudes de consommation et les tendances émergentes, afin que votre entreprise puisse résonner authentiquement dans n'importe quel marché mondial.\n\n🔧 **Comment je fonctionne :**\nJe combine la puissance de l'API Qloo (spécialisée dans l'intelligence culturelle) avec des modèles de langage avancés comme Gemini. Vous me posez une question sur un marché spécifique, et je vous aide à découvrir des opportunités concrètes et à adapter votre stratégie.\n\n🚀 **Pour commencer :**\nDites-moi simplement quel est votre type d'entreprise (magasin, restaurant, service, etc.) et la région/ville que vous souhaitez explorer. Je m'occupe du reste !\n\nQuelle est votre première question sur l'expansion culturelle ? 🌍",
       timestamp: new Date()
     }
   ]);
