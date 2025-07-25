@@ -13,7 +13,7 @@ interface ChatbotProps {
   onBackToHome: () => void;
 }
 
-type OnboardingPhase = 'initial_question' | 'explaining_app' | 'awaiting_business_type' | 'awaiting_location' | 'ready_for_query';
+type OnboardingPhase = 'initial_question' | 'explaining_app_sent' | 'awaiting_business_type' | 'awaiting_location' | 'ready_for_query';
 
 const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
   // Function to clean bot responses
@@ -69,7 +69,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
     if (onboardingPhase === 'initial_question') {
       // User is choosing between learning more or jumping in
       if (currentInput.includes('learn') || currentInput.includes('more') || currentInput.includes('how') || currentInput.includes('what') || currentInput.includes('explain')) {
-        setOnboardingPhase('explaining_app');
+        setOnboardingPhase('explaining_app_sent');
         const explanationMessage: ChatMessage = {
           id: messages.length + 2,
           type: 'bot',
@@ -77,17 +77,6 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
           timestamp: new Date()
         };
         setMessages(prev => [...prev, explanationMessage]);
-        // After explanation, ask for business type
-        setTimeout(() => {
-          const businessTypeMessage: ChatMessage = {
-            id: messages.length + 3,
-            type: 'bot',
-            content: "Perfect! Let's start by understanding your business better.\n\nWhat type of business do you have or are you planning to start? For example:\n• Restaurant or food service\n• Retail store (fashion, electronics, etc.)\n• Tech service or app\n• Consulting or professional service\n• Manufacturing\n• Or something else entirely\n\nJust describe your business in a few words! 🏢",
-            timestamp: new Date()
-          };
-          setMessages(prev => [...prev, businessTypeMessage]);
-          setOnboardingPhase('awaiting_business_type');
-        }, 1000);
       } else if (currentInput.includes('jump') || currentInput.includes('ready') || currentInput.includes('ask') || currentInput.includes('question') || currentInput.includes('no')) {
         setOnboardingPhase('awaiting_business_type');
         const businessTypeMessage: ChatMessage = {
@@ -107,6 +96,17 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
         };
         setMessages(prev => [...prev, clarificationMessage]);
       }
+      setIsLoading(false);
+    } else if (onboardingPhase === 'explaining_app_sent') {
+      // User has sent a message after receiving the explanation, now ask for business type
+      const businessTypeMessage: ChatMessage = {
+        id: messages.length + 2,
+        type: 'bot',
+        content: cleanBotResponse("Perfect! Let's start by understanding your business better.\n\nWhat type of business do you have or are you planning to start? For example:\n• Restaurant or food service\n• Retail store (fashion, electronics, etc.)\n• Tech service or app\n• Consulting or professional service\n• Manufacturing\n• Or something else entirely\n\nJust describe your business in a few words! 🏢"),
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, businessTypeMessage]);
+      setOnboardingPhase('awaiting_business_type');
       setIsLoading(false);
     } else if (onboardingPhase === 'awaiting_business_type') {
       // Store the business type and ask for location
