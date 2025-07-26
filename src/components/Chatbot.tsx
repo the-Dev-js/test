@@ -65,130 +65,80 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
     setInputValue('');
     setIsLoading(true);
 
-    // Handle different onboarding phases
-    if (onboardingPhase === 'initial_question') {
-      // User is choosing between learning more or jumping in
-      if (currentInput.includes('learn') || currentInput.includes('more') || currentInput.includes('how') || currentInput.includes('what') || currentInput.includes('explain')) {
-        setOnboardingPhase('explaining_app_sent');
-        const explanationMessage: ChatMessage = {
-          id: messages.length + 2,
-          type: 'bot',
-          content: cleanBotResponse("Great! Let me explain how I can help your business succeed globally 🌍\n\n**🎯 What I Do:**\nI analyze cultural preferences, local trends, and consumer behaviors in any market worldwide. Think of me as your cultural intelligence consultant who helps you understand what makes each market unique.\n\n**🔧 How I Work:**\n• I use Qloo's cultural intelligence API to gather real-time data about local preferences\n• I combine this with advanced AI models (like Gemini) to provide actionable insights\n• I give you specific recommendations tailored to your business and target market\n\n**💼 Use Cases:**\n• **Retailers:** What products will resonate in Tokyo vs. Toronto?\n• **Restaurants:** What flavors and dining experiences do locals prefer?\n• **Services:** How do cultural values affect customer expectations?\n• **Marketing:** What messaging and channels work best locally?\n\n**🚀 Ready to explore a market?**\nTo give you the most relevant insights, I'll need to know:\n1. Your business type (e.g., fashion retail, restaurant, tech service)\n2. The location you're interested in (city, region, or country)\n3. Your specific question or challenge\n\nWhat market would you like to explore?"),
-          timestamp: new Date()
-        };
-        setMessages(prev => [...prev, explanationMessage]);
-      } else if (currentInput.includes('jump') || currentInput.includes('ready') || currentInput.includes('ask') || currentInput.includes('question') || currentInput.includes('no')) {
-        setOnboardingPhase('awaiting_business_type');
-        const businessTypeMessage: ChatMessage = {
-          id: messages.length + 2,
-          type: 'bot',
-          content: cleanBotResponse("Great! Let's dive right in 🚀\n\nFirst, tell me about your business. What type of business do you have or are you planning to start?\n\nFor example:\n• Restaurant or food service\n• Retail store (fashion, electronics, etc.)\n• Tech service or app\n• Consulting or professional service\n• Manufacturing\n• Or something else entirely\n\nJust describe your business in a few words! 🏢"),
-          timestamp: new Date()
-        };
-        setMessages(prev => [...prev, businessTypeMessage]);
-      } else {
-        // User input is unclear
-        const clarificationMessage: ChatMessage = {
-          id: messages.length + 2,
-          type: 'bot',
-          content: cleanBotResponse("I'd love to help! Could you let me know if you'd like to:\n\n🔍 **Learn more** about how I work and what I can do\n🚀 **Ask a question** directly about a specific market\n\nJust type something like \"learn more\" or \"ask a question\" and I'll guide you accordingly!"),
-          timestamp: new Date()
-        };
-        setMessages(prev => [...prev, clarificationMessage]);
+    // Call Edge Function for all interactions - let AI handle the conversation flow
+    try {
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+      
+      if (!supabaseUrl || !supabaseAnonKey) {
+        throw new Error('Supabase configuration missing. Please set up your Supabase environment variables.');
       }
-      setIsLoading(false);
-    } else if (onboardingPhase === 'explaining_app_sent') {
-      // User has sent a message after receiving the explanation, now ask for business type
-      const businessTypeMessage: ChatMessage = {
-        id: messages.length + 2,
-        type: 'bot',
-        content: cleanBotResponse("Perfect! Let's start by understanding your business better.\n\nWhat type of business do you have or are you planning to start? For example:\n• Restaurant or food service\n• Retail store (fashion, electronics, etc.)\n• Tech service or app\n• Consulting or professional service\n• Manufacturing\n• Or something else entirely\n\nJust describe your business in a few words! 🏢"),
-        timestamp: new Date()
-      };
-      setMessages(prev => [...prev, businessTypeMessage]);
-      setOnboardingPhase('awaiting_business_type');
-      setIsLoading(false);
-    } else if (onboardingPhase === 'awaiting_business_type') {
-      // Store the business type and ask for location
-      setUserBusinessType(currentInput);
-      const cleanedBusinessType = cleanBotResponse(`Perfect! Your area of expertise is ${currentInput.toLowerCase()}. That's exciting!`);
-      const locationMessage: ChatMessage = {
-        id: messages.length + 2,
-        type: 'bot',
-        content: cleanBotResponse(`${cleanedBusinessType}\n\nNow, which location or market are you interested in exploring? This could be:\n\n• A specific city (e.g., \"Paris\", \"Tokyo\", \"New York\")\n• A country (e.g., \"France\", \"Japan\", \"Brazil\")\n• A region (e.g., \"Southeast Asia\", \"Northern Europe\")\n• Or even a neighborhood if you're thinking locally\n\nWhere would you like to expand or understand better?`),
-        timestamp: new Date()
-      };
-      setMessages(prev => [...prev, locationMessage]);
-      setOnboardingPhase('awaiting_location');
-      setIsLoading(false);
-    } else if (onboardingPhase === 'awaiting_location') {
-      // Store the location and confirm readiness
-      setUserLocation(currentInput);
-      const cleanedConfirmation = cleanBotResponse(`Excellent! I now understand your expertise is in ${userBusinessType?.toLowerCase()} and you're interested in the ${currentInput} market.`);
-      const readyMessage: ChatMessage = {
-        id: messages.length + 2,
-        type: 'bot',
-       content: cleanBotResponse(`${cleanedConfirmation}\n\nI'm ready to provide you with detailed cultural insights, local preferences, and actionable recommendations for this market.\n\nWhat specific question do you have about ${currentInput}? For example:\n• What are the local preferences and trends?\n• How should I adapt my products/services?\n• What marketing approaches work best there?\n• What cultural factors should I consider?\n\nFeel free to ask anything about ${userBusinessType?.toLowerCase()} opportunities in ${currentInput}!`),
-        timestamp: new Date()
-      };
-      setMessages(prev => [...prev, readyMessage]);
-      setOnboardingPhase('ready_for_query');
-      setIsLoading(false);
-    } else if (onboardingPhase === 'ready_for_query') {
-      // User is ready to make actual queries - call the Edge Function
-      try {
-        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-        const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-        
-        if (!supabaseUrl || !supabaseAnonKey) {
-          throw new Error('Supabase configuration missing. Please set up your Supabase environment variables.');
+
+      // Update phase based on user input and current phase
+      let nextPhase = onboardingPhase;
+      if (onboardingPhase === 'initial_question') {
+        if (currentInput.toLowerCase().includes('learn') || currentInput.toLowerCase().includes('more') || currentInput.toLowerCase().includes('how') || currentInput.toLowerCase().includes('what') || currentInput.toLowerCase().includes('explain')) {
+          nextPhase = 'explaining_app_sent';
+        } else if (currentInput.toLowerCase().includes('jump') || currentInput.toLowerCase().includes('ready') || currentInput.toLowerCase().includes('ask') || currentInput.toLowerCase().includes('question')) {
+          nextPhase = 'awaiting_business_type';
         }
-
-        const response = await fetch(`${supabaseUrl}/functions/v1/chat-orchestrator`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${supabaseAnonKey}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            message: inputValue, // Use original input, not lowercased
-            businessType: userBusinessType || 'general business',
-            location: userLocation || 'global market',
-            context: 'general_inquiry'
-          })
-        });
-
-        if (!response.ok) {
-          throw new Error(`API request failed: ${response.status}`);
-        }
-
-        const data = await response.json();
-        
-        // Clean the bot response to remove emojis and *** symbols
-        const cleanedResponse = cleanBotResponse(data.response || 'Sorry, I could not process your request at this time.');
-        
-        const botMessage: ChatMessage = {
-          id: messages.length + 2,
-          type: 'bot',
-          content: cleanedResponse,
-          timestamp: new Date()
-        };
-        
-        setMessages(prev => [...prev, botMessage]);
-      } catch (error) {
-        console.error('Error calling chat orchestrator:', error);
-        
-        const errorMessage: ChatMessage = {
-          id: messages.length + 2,
-          type: 'bot',
-         content: cleanBotResponse(`I apologize, but I'm having trouble connecting to my cultural intelligence services right now. This could be due to:\n\n• Supabase configuration not set up yet\n• API keys not configured\n• Network connectivity issues\n\nPlease check your Supabase setup and try again. In the meantime, I'd be happy to help you think through your cultural market research questions!`),
-          timestamp: new Date()
-        };
-        
-        setMessages(prev => [...prev, errorMessage]);
-      } finally {
-        setIsLoading(false);
+      } else if (onboardingPhase === 'explaining_app_sent') {
+        nextPhase = 'awaiting_business_type';
+      } else if (onboardingPhase === 'awaiting_business_type') {
+        setUserBusinessType(currentInput);
+        nextPhase = 'awaiting_location';
+      } else if (onboardingPhase === 'awaiting_location') {
+        setUserLocation(currentInput);
+        nextPhase = 'ready_for_query';
       }
+
+      const response = await fetch(`${supabaseUrl}/functions/v1/chat-orchestrator`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${supabaseAnonKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: currentInput,
+          phase: onboardingPhase,
+          businessType: userBusinessType || null,
+          location: userLocation || null,
+          context: 'conversation'
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`API request failed: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      // Clean the bot response to remove emojis and *** symbols
+      const cleanedResponse = cleanBotResponse(data.response || 'Sorry, I could not process your request at this time.');
+      
+      const botMessage: ChatMessage = {
+        id: messages.length + 2,
+        type: 'bot',
+        content: cleanedResponse,
+        timestamp: new Date()
+      };
+      
+      setMessages(prev => [...prev, botMessage]);
+      setOnboardingPhase(nextPhase);
+      
+    } catch (error) {
+      console.error('Error calling chat orchestrator:', error);
+      
+      const errorMessage: ChatMessage = {
+        id: messages.length + 2,
+        type: 'bot',
+        content: cleanBotResponse(`I apologize, but I'm having trouble connecting to my cultural intelligence services right now. This could be due to:\n\n• Supabase configuration not set up yet\n• API keys not configured\n• Network connectivity issues\n\nPlease check your Supabase setup and try again. In the meantime, I'd be happy to help you think through your cultural market research questions!`),
+        timestamp: new Date()
+      };
+      
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
+      setIsLoading(false);
     }
   };
 

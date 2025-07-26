@@ -3,6 +3,7 @@ import { corsHeaders } from '../_shared/cors.ts'
 
 interface ChatRequest {
   message: string;
+  phase?: string;
   businessType?: string;
   location?: string;
   context?: string;
@@ -32,7 +33,7 @@ serve(async (req) => {
   }
 
   try {
-    const { message, businessType, location, context }: ChatRequest = await req.json()
+    const { message, phase, businessType, location, context }: ChatRequest = await req.json()
 
     if (!message) {
       return new Response(
@@ -44,8 +45,25 @@ serve(async (req) => {
       )
     }
 
-    // Step 1: Call Qloo API for cultural insights
-    const qlooData = await getQlooInsights(location || 'Canada', businessType || 'retail')
+    // Handle different conversation phases
+    if (phase && phase !== 'ready_for_query') {
+      // For onboarding phases, generate AI response without Qloo data
+      const onboardingResponse = await generateOnboardingResponse(message, phase, businessType, location)
+      
+      return new Response(
+        JSON.stringify({ 
+          response: onboardingResponse,
+          phase: phase,
+          timestamp: new Date().toISOString()
+        }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      )
+    }
+
+    // Step 1: Call Qloo API for cultural insights (only for ready_for_query phase)
+    const qlooData = await getQlooInsights(location || 'global market', businessType || 'general business')
     
     // Step 2: Construct enhanced prompt with cultural context
     const enhancedPrompt = buildCulturalPrompt(message, qlooData, businessType, location)
@@ -316,4 +334,108 @@ async function callGemini(prompt: string, apiKey: string): Promise<string> {
 
   const data = await response.json()
   return data.candidates?.[0]?.content?.parts?.[0]?.text || 'Sorry, I could not generate a response.'
+}
+
+async function generateOnboardingResponse(message: string, phase: string, businessType?: string | null, location?: string | null): Promise<string> {
+  const openaiApiKey = Deno.env.get('OPENAI_API_KEY')
+  const geminiApiKey = Deno.env.get('GEMINI_API_KEY')
+
+  const onboardingPrompt = buildOnboardingPrompt(message, phase, businessType, location)
+
+  // Try OpenAI first, then Gemini as fallback
+  if (openaiApiKey) {
+    try {
+      return await callOpenAI(onboardingPrompt, openaiApiKey)
+    } catch (error) {
+      console.error('OpenAI API error:', error)
+      if (geminiApiKey) {
+        return await callGemini(onboardingPrompt, geminiApiKey)
+      }
+    }
+  } else if (geminiApiKey) {
+    return await callGemini(onboardingPrompt, geminiApiKey)
+  }
+
+  // Fallback response if no API keys are available
+  return getFallbackOnboardingResponse(phase, message)
+}
+
+function buildOnboardingPrompt(message: string, phase: string, businessType?: string | null, location?: string | null): string {
+  const baseContext = `You are a Cultural AI Assistant that helps businesses understand global markets through cultural intelligence. You are friendly, professional, and enthusiastic about helping users expand their business globally.
+
+IMPORTANT: Keep your responses conversational and natural. Avoid using emojis, bold markdown (**), or bullet points with symbols. Use simple text formatting.`
+
+  switch (phase) {
+    case 'initial_question':
+      return `${baseContext}
+
+The user just said: "${message}"
+
+This is their first interaction. They seem to be choosing between:
+1. Learning more about how you work
+2. Jumping right into asking questions
+
+Respond appropriately based on their message. If they want to learn more, explain your capabilities. If they want to jump in, start asking about their business. If unclear, ask them to clarify their preference.
+
+Keep it warm, welcoming, and under 150 words.`
+
+    case 'explaining_app_sent':
+      return `${baseContext}
+
+You just explained your capabilities to the user. They responded: "${message}"
+
+Now transition to asking about their business type. Be natural and conversational. Ask what type of business they have or are planning to start, and give some examples to help them.
+
+Keep it under 100 words and make it feel like a natural conversation flow.`
+
+    case 'awaiting_business_type':
+      return `${baseContext}
+
+The user just told you about their business: "${message}"
+
+Acknowledge their business type positively and naturally, then ask about the location/market they're interested in exploring. Give examples of how they can specify locations (cities, countries, regions).
+
+Keep it conversational and under 100 words.`
+
+    case 'awaiting_location':
+      return `${baseContext}
+
+The user's business type: "${businessType}"
+The user just specified their target location: "${message}"
+
+Acknowledge both their business and location, then let them know you're ready to help with specific questions. Give examples of the types of questions they can ask about cultural preferences, market opportunities, etc.
+
+Keep it encouraging and under 120 words.`
+
+    default:
+      return `${baseContext}
+
+The user said: "${message}"
+Current phase: ${phase}
+
+Respond helpfully and guide them through the conversation naturally.`
+  }
+}
+
+function getFallbackOnboardingResponse(phase: string, message: string): string {
+  switch (phase) {
+    case 'initial_question':
+      if (message.toLowerCase().includes('learn') || message.toLowerCase().includes('more')) {
+        return "I'd love to explain how I can help! I'm your Cultural AI Assistant, powered by Qloo's cultural intelligence and advanced AI. I analyze local preferences, trends, and consumer behaviors worldwide to help businesses succeed in new markets. I can help you understand what products resonate in different cultures, how to adapt your services, and what marketing approaches work best locally. Ready to explore a specific market?"
+      } else {
+        return "Great! Let's dive right in. To give you the most relevant cultural insights, I'll need to understand your business better. What type of business do you have or are planning to start? For example: restaurant, retail store, tech service, consulting, or something else entirely."
+      }
+    
+    case 'explaining_app_sent':
+      return "Perfect! Let's start by understanding your business. What type of business do you have or are you planning to start? This could be anything from a restaurant to a tech startup, retail store, or professional service."
+    
+    case 'awaiting_business_type':
+      return `Excellent! I understand you're working in ${message}. Now, which location or market are you interested in exploring? You can specify a city like Tokyo or Paris, a country like Brazil or Germany, or even a region like Southeast Asia.`
+    
+    case 'awaiting_location':
+      return `Perfect! I now understand you're interested in ${message} for your business. I'm ready to provide detailed cultural insights and recommendations. What specific questions do you have about this market? You can ask about local preferences, cultural factors, market opportunities, or how to adapt your approach.`
+    
+    default:
+      return "I'm here to help you understand cultural preferences and market opportunities worldwide. What would you like to know?"
+  }
 }
