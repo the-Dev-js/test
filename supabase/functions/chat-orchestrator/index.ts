@@ -89,7 +89,7 @@ async function getQlooInsights(location: string, businessType: string): Promise<
 
   try {
     // Example Qloo API call - adjust based on actual Qloo API documentation
-    const response = await fetch('https://api.qloo.com/v1/cultural-insights', {
+    const response = await fetch('https://hackathon.api.qloo.com', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${qlooApiKey}`,
