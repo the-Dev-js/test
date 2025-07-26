@@ -111,7 +111,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
     } else if (onboardingPhase === 'awaiting_business_type') {
       // Store the business type and ask for location
       setUserBusinessType(currentInput);
-      const cleanedBusinessType = cleanBotResponse(`Perfect! So you have a ${currentInput.toLowerCase()} business. That's exciting!`);
+      const cleanedBusinessType = cleanBotResponse(`Perfect! Your area of expertise is ${currentInput.toLowerCase()}. That's exciting!`);
       const locationMessage: ChatMessage = {
         id: messages.length + 2,
         type: 'bot',
@@ -124,11 +124,11 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
     } else if (onboardingPhase === 'awaiting_location') {
       // Store the location and confirm readiness
       setUserLocation(currentInput);
-      const cleanedConfirmation = cleanBotResponse(`Excellent! I now understand that you have a ${userBusinessType?.toLowerCase()} business and you're interested in the ${currentInput} market.`);
+      const cleanedConfirmation = cleanBotResponse(`Excellent! I now understand your expertise is in ${userBusinessType?.toLowerCase()} and you're interested in the ${currentInput} market.`);
       const readyMessage: ChatMessage = {
         id: messages.length + 2,
         type: 'bot',
-       content: cleanBotResponse(`${cleanedConfirmation}\n\nI'm ready to provide you with detailed cultural insights, local preferences, and actionable recommendations for this market.\n\nWhat specific question do you have about ${currentInput}? For example:\n• What are the local preferences and trends?\n• How should I adapt my products/services?\n• What marketing approaches work best there?\n• What cultural factors should I consider?\n\nFeel free to ask anything about expanding your ${userBusinessType?.toLowerCase()} business in ${currentInput}!`),
+       content: cleanBotResponse(`${cleanedConfirmation}\n\nI'm ready to provide you with detailed cultural insights, local preferences, and actionable recommendations for this market.\n\nWhat specific question do you have about ${currentInput}? For example:\n• What are the local preferences and trends?\n• How should I adapt my products/services?\n• What marketing approaches work best there?\n• What cultural factors should I consider?\n\nFeel free to ask anything about ${userBusinessType?.toLowerCase()} opportunities in ${currentInput}!`),
         timestamp: new Date()
       };
       setMessages(prev => [...prev, readyMessage]);
