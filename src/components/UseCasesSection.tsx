@@ -219,7 +219,7 @@ const UseCasesSection = () => {
           transition={{ duration: 0.8, delay: 0.5 }}
           className="mt-12 text-center"
         >
-          <div className="bg-gradient-to-r from-amber-500 to-orange-600 rounded-2xl p-8 text-white">
+          <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-white">
             <div className="flex items-center justify-center gap-3 mb-4">
               <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
                 <span className="text-sm font-bold">β</span>
