@@ -225,24 +225,24 @@ const UseCasesSection = () => {
                 <span className="text-sm font-bold">β</span>
               </div>
               <h3 className="text-2xl font-bold">
-                Version Bêta - Fonctionnalités à Venir
+                Beta Version - Upcoming Features
               </h3>
             </div>
             <p className="text-lg mb-6 text-amber-100">
-              Cultural AI est actuellement en version bêta. La plupart des fonctionnalités avancées seront bientôt disponibles pour offrir une expérience encore plus riche et personnalisée.
+              Cultural AI is currently in beta version. Most advanced features will be available soon to offer an even richer and more personalized experience.
             </p>
             
             <div className="grid md:grid-cols-2 gap-6 text-left">
               <div className="space-y-4">
-                <h4 className="font-semibold text-lg mb-3 text-center md:text-left">🚀 Prochainement Disponible</h4>
+                <h4 className="font-semibold text-lg mb-3 text-center md:text-left">🚀 Coming Soon</h4>
                 <div className="space-y-3">
                   <div className="flex items-start gap-3">
                     <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                       <Brain className="w-3 h-3" />
                     </div>
                     <div>
-                      <div className="font-medium">Connexion LLM Personnalisée</div>
-                      <div className="text-sm text-amber-100">Connectez votre LLM favori : GPT, Claude, DeepSeek, Gemini...</div>
+                      <div className="font-medium">Custom LLM Connection</div>
+                      <div className="text-sm text-amber-100">Connect your favorite LLM: GPT, Claude, DeepSeek, Gemini...</div>
                     </div>
                   </div>
                   
@@ -251,23 +251,33 @@ const UseCasesSection = () => {
                       <User className="w-3 h-3" />
                     </div>
                     <div>
-                      <div className="font-medium">Comptes Utilisateur</div>
-                      <div className="text-sm text-amber-100">Gestion de l'historique et sauvegarde des conversations</div>
+                      <div className="font-medium">User Accounts</div>
+                      <div className="text-sm text-amber-100">History management and conversation saving</div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start gap-3">
+                    <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <Globe className="w-3 h-3" />
+                    </div>
+                    <div>
+                      <div className="font-medium">Multi-language Support</div>
+                      <div className="text-sm text-amber-100">Native support for French, Spanish, German and more</div>
                     </div>
                   </div>
                 </div>
               </div>
               
               <div className="space-y-4">
-                <h4 className="font-semibold text-lg mb-3 text-center md:text-left">📈 Améliorations</h4>
+                <h4 className="font-semibold text-lg mb-3 text-center md:text-left">📈 Enhancements</h4>
                 <div className="space-y-3">
                   <div className="flex items-start gap-3">
                     <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                       <ArrowRight className="w-3 h-3" />
                     </div>
                     <div>
-                      <div className="font-medium">Export Avancé</div>
-                      <div className="text-sm text-amber-100">Exportation vers Google Docs, Notion, PDF...</div>
+                      <div className="font-medium">Advanced Export</div>
+                      <div className="text-sm text-amber-100">Export to Google Docs, Notion, PDF...</div>
                     </div>
                   </div>
                   
@@ -276,8 +286,8 @@ const UseCasesSection = () => {
                       <Sparkles className="w-3 h-3" />
                     </div>
                     <div>
-                      <div className="font-medium">IA Optimisée</div>
-                      <div className="text-sm text-amber-100">Combinaison avancée LLM + Qloo pour des conseils ultra-précis</div>
+                      <div className="font-medium">Optimized AI</div>
+                      <div className="text-sm text-amber-100">Advanced LLM + Qloo combination for ultra-precise advice</div>
                     </div>
                   </div>
                 </div>
@@ -286,7 +296,7 @@ const UseCasesSection = () => {
             
             <div className="mt-6 p-4 bg-white/10 rounded-lg">
               <p className="text-sm text-amber-100 text-center">
-                💡 <strong>Testez dès maintenant</strong> les fonctionnalités de base et découvrez le potentiel de Cultural AI pour votre expansion internationale !
+                💡 <strong>Try it now</strong> and discover the potential of Cultural AI for your international expansion!
               </p>
             </div>
           </div>
