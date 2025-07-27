@@ -8,7 +8,10 @@ import {
   Palette, 
   Plane,
   ArrowRight,
-  CheckCircle
+  CheckCircle,
+  Brain,
+  User,
+  Sparkles
 } from 'lucide-react';
 
 const UseCasesSection = () => {
@@ -215,17 +218,76 @@ const UseCasesSection = () => {
           transition={{ duration: 0.8, delay: 0.5 }}
           className="mt-12 text-center"
         >
-          <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-white">
-            <h3 className="text-2xl font-bold mb-4">
-              Your Industry, Your Success Story
-            </h3>
-            <p className="text-lg mb-6 text-blue-100">
-              No matter what business you're in, Cultural AI can help you understand and succeed in any global market.
+          <div className="bg-gradient-to-r from-amber-500 to-orange-600 rounded-2xl p-8 text-white">
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                <span className="text-sm font-bold">β</span>
+              </div>
+              <h3 className="text-2xl font-bold">
+                Version Bêta - Fonctionnalités à Venir
+              </h3>
+            </div>
+            <p className="text-lg mb-6 text-amber-100">
+              Cultural AI est actuellement en version bêta. La plupart des fonctionnalités avancées seront bientôt disponibles pour offrir une expérience encore plus riche et personnalisée.
             </p>
-            <button className="inline-flex items-center gap-2 bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors duration-200">
-              <span>Start Your Success Story</span>
-              <ArrowRight className="w-5 h-5" />
-            </button>
+            
+            <div className="grid md:grid-cols-2 gap-6 text-left">
+              <div className="space-y-4">
+                <h4 className="font-semibold text-lg mb-3 text-center md:text-left">🚀 Prochainement Disponible</h4>
+                <div className="space-y-3">
+                  <div className="flex items-start gap-3">
+                    <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <Brain className="w-3 h-3" />
+                    </div>
+                    <div>
+                      <div className="font-medium">Connexion LLM Personnalisée</div>
+                      <div className="text-sm text-amber-100">Connectez votre LLM favori : GPT, Claude, DeepSeek, Gemini...</div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start gap-3">
+                    <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <User className="w-3 h-3" />
+                    </div>
+                    <div>
+                      <div className="font-medium">Comptes Utilisateur</div>
+                      <div className="text-sm text-amber-100">Gestion de l'historique et sauvegarde des conversations</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="space-y-4">
+                <h4 className="font-semibold text-lg mb-3 text-center md:text-left">📈 Améliorations</h4>
+                <div className="space-y-3">
+                  <div className="flex items-start gap-3">
+                    <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <ArrowRight className="w-3 h-3" />
+                    </div>
+                    <div>
+                      <div className="font-medium">Export Avancé</div>
+                      <div className="text-sm text-amber-100">Exportation vers Google Docs, Notion, PDF...</div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start gap-3">
+                    <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <Sparkles className="w-3 h-3" />
+                    </div>
+                    <div>
+                      <div className="font-medium">IA Optimisée</div>
+                      <div className="text-sm text-amber-100">Combinaison avancée LLM + Qloo pour des conseils ultra-précis</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="mt-6 p-4 bg-white/10 rounded-lg">
+              <p className="text-sm text-amber-100 text-center">
+                💡 <strong>Testez dès maintenant</strong> les fonctionnalités de base et découvrez le potentiel de Cultural AI pour votre expansion internationale !
+              </p>
+            </div>
           </div>
         </motion.div>
       </div>
