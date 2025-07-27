@@ -11,7 +11,8 @@ import {
   CheckCircle,
   Brain,
   User,
-  Sparkles
+  Sparkles,
+  Globe
 } from 'lucide-react';
 
 const UseCasesSection = () => {
