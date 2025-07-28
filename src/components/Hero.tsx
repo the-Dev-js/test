@@ -10,11 +10,11 @@ interface HeroProps {
 
 const Hero: React.FC<HeroProps> = ({ onStartExploring }) => {
   return (
-    <section className="relative min-h-screen bg-gradient-to-br from-[#F9FAFB] via-[#F9FAFB] to-[#F9FAFB] overflow-hidden">
+    <section id="home" className="relative min-h-screen bg-gradient-to-br from-[#F9FAFB] via-[#F9FAFB] to-[#F9FAFB] overflow-hidden">
       <ParticleBackground />
       
       {/* Main Content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-16">
         <div className="grid lg:grid-cols-2 gap-16 items-center min-h-[85vh]">
           
           {/* Left Side - Text Zone */}
@@ -25,32 +25,6 @@ const Hero: React.FC<HeroProps> = ({ onStartExploring }) => {
             className="space-y-8"
           >
             <div className="space-y-8">
-              {/* Badge */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
-                className="flex items-center gap-3"
-              >
-                {/* Language Selection Button */}
-                <button className="group flex items-center gap-2 px-4 py-2 bg-white/90 backdrop-blur-sm rounded-full border border-[#60A5FA]/20 shadow-sm text-[#1877F2] hover:bg-white hover:border-[#1877F2]/40 hover:shadow-md transition-all duration-300 hover:scale-105">
-                  <Languages className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />
-                  <span className="text-sm font-medium">EN</span>
-                  <div className="w-1 h-1 bg-[#FBBF24] rounded-full opacity-60"></div>
-                </button>
-                
-                {/* Theme Toggle Button */}
-                <button className="group flex items-center justify-center p-2 bg-white/90 backdrop-blur-sm rounded-full border border-[#60A5FA]/20 shadow-sm text-[#1877F2] hover:bg-white hover:border-[#1877F2]/40 hover:shadow-md transition-all duration-300 hover:scale-105">
-                  <Sun className="w-4 h-4 group-hover:rotate-180 transition-transform duration-500" />
-                </button>
-                
-                {/* AI Badge */}
-                <div className="inline-flex items-center gap-2 px-3 py-1 bg-black rounded-full border border-[#60A5FA]/20 shadow-sm">
-                  <div className="w-2 h-2 bg-[#FBBF24] rounded-full animate-pulse"></div>
-                  <span className="text-sm font-medium text-white">AI-Powered Cultural Intelligence</span>
-                </div>
-              </motion.div>
-              
               <motion.h1 
                 className="text-4xl md:text-5xl lg:text-6xl font-bold text-[#111827] leading-[1.05] tracking-tight"
                 initial={{ opacity: 0, y: 30 }}
