@@ -19,9 +19,9 @@ const Navbar: React.FC<NavbarProps> = ({ onStartExploring }) => {
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
-      className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-5xl px-4"
+      className="fixed top-4 left-0 right-0 mx-auto z-50 w-full max-w-5xl"
     >
-      <div className="bg-white/90 backdrop-blur-md rounded-full shadow-lg border border-white/20 px-6 py-3">
+      <div className="bg-white/10 backdrop-blur-md rounded-full shadow-lg border border-white/20 px-6 py-3 mx-4">
         <div className="flex items-center justify-between">
           
           {/* Logo Section */}
