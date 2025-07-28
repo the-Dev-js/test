@@ -1,5 +1,6 @@
 import React from 'react';
 import { useState } from 'react';
+import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import ProblemSection from './components/ProblemSection';
 import HowItWorksSection from './components/HowItWorksSection';
@@ -21,6 +22,9 @@ function App() {
 
   return (
     <div className="min-h-screen">
+      {currentView === 'hero' && (
+        <Navbar onStartExploring={handleStartExploring} />
+      )}
       {currentView === 'hero' ? (
         <>
           <Hero onStartExploring={handleStartExploring} />
