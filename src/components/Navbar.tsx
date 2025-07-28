@@ -67,7 +67,7 @@ const Navbar: React.FC<NavbarProps> = ({ onStartExploring }) => {
           <div className="flex items-center gap-4">
             <button
               onClick={onStartExploring}
-              className="hidden md:flex items-center gap-2 px-4 py-1.5 bg-gradient-to-r from-[#2563EB] to-[#1877F2] text-white font-medium rounded-full hover:shadow-lg hover:shadow-[#1877F2]/30 transition-all duration-300 hover:scale-105"
+              className="hidden md:flex items-center gap-2 px-3 py-1 bg-gradient-to-r from-[#2563EB] to-[#1877F2] text-white text-sm font-medium rounded-full hover:shadow-lg hover:shadow-[#1877F2]/30 transition-all duration-300 hover:scale-105"
             >
               <span>Start Exploring</span>
             </button>
