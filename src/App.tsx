@@ -6,6 +6,7 @@ import HowItWorksSection from './components/HowItWorksSection';
 import FeaturesSection from './components/FeaturesSection';
 import UseCasesSection from './components/UseCasesSection';
 import Chatbot from './components/Chatbot';
+import Footer from './components/Footer';
 
 function App() {
   const [currentView, setCurrentView] = useState<'hero' | 'chatbot'>('hero');
@@ -31,6 +32,7 @@ function App() {
       ) : (
         <Chatbot onBackToHome={handleBackToHome} />
       )}
+      <Footer />
     </div>
   );
 }
