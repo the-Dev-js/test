@@ -38,7 +38,7 @@ const Footer = () => {
               href="#" 
               className="text-[#6B7280] hover:text-[#1877F2] transition-colors duration-200"
             >
-              Privacy
+              Secure
             </a>
             <a 
               href="#" 
