@@ -44,7 +44,7 @@ const Footer = () => {
               href="#" 
               className="text-[#6B7280] hover:text-[#1877F2] transition-colors duration-200"
             >
-              Terms
+              Free/powerful
             </a>
           </div>
         </div>
