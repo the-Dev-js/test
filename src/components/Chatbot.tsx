@@ -313,38 +313,3 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
 };
 
 export default Chatbot;
-                <textarea
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  placeholder="Ask about cultural preferences, local tastes, or business opportunities..."
-                  className="w-full p-3 pr-12 border border-[#E5E7EB] rounded-lg max-h-40 focus:outline-none focus:ring-2 focus:ring-[#1877F2] focus:border-transparent text-[#111827] placeholder-[#6B7280] resize-y"
-                  rows={3}
-                  disabled={isLoading}
-                />
-                <div className="absolute bottom-2 right-2 flex items-center gap-2">
-                  <Globe className="w-4 h-4 text-[#9CA3AF]" />
-                </div>
-              </div>
-              
-              <button
-                onClick={handleSendMessage}
-                disabled={!inputValue.trim() || isLoading}
-                className="group relative px-4 py-2 bg-gradient-to-r from-[#2563EB] to-[#1877F2] text-white rounded-xl hover:shadow-xl hover:shadow-[#1877F2]/30 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed font-medium self-end overflow-hidden hover:scale-[1.02] hover:-translate-y-0.5"
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-[#1877F2] via-[#60A5FA] to-[#2563EB] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl"></div>
-                <div className="relative flex items-center justify-center gap-2">
-                  <Send className="w-4 h-4" />
-                  <span>Send</span>
-                </div>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default Chatbot;
