@@ -113,6 +113,41 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
 
       const data = await response.json();
       
+      // Check for errors first
+      if (data.error || data.errorType) {
+        let errorMessage = 'Sorry, I encountered an issue. Please try again.';
+        
+        switch (data.errorType) {
+          case 'QLOO_API_ERROR':
+            errorMessage = 'I\'m having trouble accessing cultural data right now. I can still help with general advice - please try rephrasing your question or try again in a moment.';
+            break;
+          case 'LLM_API_ERROR':
+            errorMessage = 'I\'m experiencing technical difficulties with my AI services. Please try again in a few moments.';
+            break;
+          case 'MISSING_API_KEYS':
+            errorMessage = 'The AI services are not properly configured. Please contact support or try again later.';
+            break;
+          case 'ONBOARDING_ERROR':
+            errorMessage = 'I\'m having trouble processing your request. Let me try to help you differently - what specific market or business question do you have?';
+            break;
+          case 'INVALID_REQUEST':
+            errorMessage = 'I didn\'t receive your message properly. Please try typing your question again.';
+            break;
+          default:
+            errorMessage = data.message || 'An unexpected error occurred. Please try again.';
+        }
+        
+        const errorBotMessage: ChatMessage = {
+          id: messages.length + 2,
+          type: 'bot',
+          content: cleanBotResponse(errorMessage),
+          timestamp: new Date()
+        };
+        
+        setMessages(prev => [...prev, errorBotMessage]);
+        return;
+      }
+      
       // Clean the bot response to remove emojis and *** symbols
       const cleanedResponse = cleanBotResponse(data.response || 'Sorry, I could not process your request at this time.');
       
@@ -132,7 +167,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
       const errorMessage: ChatMessage = {
         id: messages.length + 2,
         type: 'bot',
-        content: cleanBotResponse(`I apologize, but I'm having trouble connecting to my cultural intelligence services right now. This could be due to:\n\n• Supabase configuration not set up yet\n• API keys not configured\n• Network connectivity issues\n\nPlease check your Supabase setup and try again. In the meantime, I'd be happy to help you think through your cultural market research questions!`),
+        content: cleanBotResponse(`I apologize, but I'm having trouble connecting to my services right now. This could be due to network connectivity issues or server maintenance.\n\nPlease try again in a moment. If the problem persists, you can still ask me general questions about cultural market research and I'll do my best to help!`),
         timestamp: new Date()
       };
       

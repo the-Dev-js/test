@@ -223,7 +223,7 @@ function buildCulturalPrompt(
     `${c.name} (${Math.round(c.score * 100)}% relevance): ${c.items.map(i => i.name).join(', ')}`
   ).join('\n') || 'No cluster data available'
 
-  return `You are an expert Cultural Intelligence Consultant powered by Qloo's cultural intelligence data. You provide strategic, actionable business advice for international expansion. Your responses should be professional, insightful, and immediately implementable.
+  return `You are a Cultural AI Assistant powered by Qloo's cultural intelligence data. You help businesses understand local cultural preferences and provide actionable recommendations.
 
 CULTURAL CONTEXT FOR ${location?.toUpperCase() || 'THE TARGET MARKET'}:
 
@@ -241,16 +241,14 @@ Location: ${location || 'Not specified'}
 
 USER QUESTION: ${userMessage}
 
-RESPONSE FORMAT:
-Please structure your response in exactly three sections:
+Please provide a comprehensive response that:
+1. Directly answers the user's question
+2. Incorporates the cultural insights and local trends provided above
+3. Gives specific, actionable recommendations for their business
+4. Explains how these recommendations align with local cultural preferences
+5. Suggests 2-3 concrete next steps they can take
 
-1. CULTURAL ANALYSIS: Directly answer the user's question by analyzing the cultural context and local trends specific to their market.
-
-2. STRATEGIC RECOMMENDATIONS: Provide 3-4 specific, actionable business recommendations that align with the cultural preferences identified above. Each recommendation should be concrete and implementable.
-
-3. NEXT STEPS: Suggest 2-3 immediate, concrete actions they can take within the next 30 days to implement these insights.
-
-Keep your tone professional yet conversational. Focus on practical business value and cultural alignment. Limit your response to 300 words maximum for clarity and actionability.`
+Keep your response conversational, insightful, and practical. Focus on how cultural understanding can drive business success in this market.`
 }
 
 async function callLLM(prompt: string): Promise<string> {
@@ -345,22 +343,22 @@ async function generateOnboardingResponse(message: string, phase: string, busine
 
   const onboardingPrompt = buildOnboardingPrompt(message, phase, businessType, location)
 
-  // Try OpenAI first, then Gemini as fallback
-  if (openaiApiKey) {
+  // Try Gemini first, then OpenAI as fallback
+  if (geminiApiKey) {
     try {
-      return await callOpenAI(onboardingPrompt, openaiApiKey)
+      return await callGemini(onboardingPrompt, geminiApiKey)
     } catch (error) {
-      console.error('OpenAI API error:', error)
-      if (geminiApiKey) {
-        return await callGemini(onboardingPrompt, geminiApiKey)
+      console.error('Gemini API error:', error)
+      if (openaiApiKey) {
+        return await callOpenAI(onboardingPrompt, openaiApiKey)
       }
     }
-  } else if (geminiApiKey) {
-    return await callGemini(onboardingPrompt, geminiApiKey)
+  } else if (openaiApiKey) {
+    return await callOpenAI(onboardingPrompt, openaiApiKey)
   }
 
-  // Fallback response if no API keys are available
-  return getFallbackOnboardingResponse(phase, message)
+  // Throw error if no API keys are available
+  throw new Error('NO_LLM_API_KEYS_CONFIGURED')
 }
 
 function buildOnboardingPrompt(message: string, phase: string, businessType?: string | null, location?: string | null): string {
