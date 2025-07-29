@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Send, Download, Bot, User, Globe, Sparkles } from 'lucide-react';
+import { ArrowLeft, Send, Download, Bot, User, Globe, Sparkles, Plus } from 'lucide-react';
 
 interface ChatMessage {
   id: number;
@@ -278,8 +278,41 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
           
           {/* Input Area */}
           <div className="border-t border-[#E5E7EB] p-4 bg-white shadow-md">
-            <div className="flex gap-3">
-              <div className="flex-1 relative">
+            <div className="max-w-4xl mx-auto">
+              <div className="bg-gray-100 rounded-3xl shadow-sm flex items-center gap-2 p-2">
+                <button className="w-8 h-8 rounded-full flex items-center justify-center text-gray-500 hover:bg-gray-200 flex-shrink-0 transition-colors duration-200">
+                  <Plus className="w-5 h-5" />
+                </button>
+                
+                <div className="flex-1">
+                  <textarea
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
+                    onKeyPress={handleKeyPress}
+                    placeholder="Ask about cultural preferences, local tastes, or business opportunities..."
+                    className="w-full bg-transparent text-gray-800 placeholder-gray-500 resize-none outline-none py-2 px-0 min-h-[24px] max-h-[120px] overflow-y-auto"
+                    rows={1}
+                    disabled={isLoading}
+                  />
+                </div>
+                
+                <button
+                  onClick={handleSendMessage}
+                  disabled={!inputValue.trim() || isLoading}
+                  className="w-9 h-9 p-0 rounded-full bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0 flex items-center justify-center"
+                >
+                  <Send className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Chatbot;
                 <textarea
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
