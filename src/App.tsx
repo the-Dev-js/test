@@ -36,7 +36,7 @@ function App() {
       ) : (
         <Chatbot onBackToHome={handleBackToHome} />
       )}
-      <Footer />
+      {currentView === 'hero' && <Footer />}
     </div>
   );
 }

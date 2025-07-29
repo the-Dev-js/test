@@ -297,10 +297,14 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
               <button
                 onClick={handleSendMessage}
                 disabled={!inputValue.trim() || isLoading}
-                className="px-4 py-2 bg-gradient-to-r from-[#2563EB] to-[#1877F2] text-white rounded-lg hover:shadow-lg hover:shadow-[#1877F2]/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 font-medium self-end"
+                className="group relative px-4 py-2 bg-gradient-to-r from-[#2563EB] to-[#1877F2] text-white rounded-xl hover:shadow-xl hover:shadow-[#1877F2]/30 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed font-medium self-end overflow-hidden hover:scale-[1.02] hover:-translate-y-0.5"
               >
-                <Send className="w-4 h-4" />
-                <span>Send</span>
+                <div className="absolute inset-0 bg-gradient-to-r from-[#1877F2] via-[#60A5FA] to-[#2563EB] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl"></div>
+                <div className="relative flex items-center justify-center gap-2">
+                  <Send className="w-4 h-4" />
+                  <span>Send</span>
+                </div>
               </button>
             </div>
           </div>
