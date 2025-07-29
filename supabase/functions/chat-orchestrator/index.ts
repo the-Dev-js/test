@@ -252,25 +252,26 @@ Keep your response conversational, insightful, and practical. Focus on how cultu
 }
 
 async function callLLM(prompt: string): Promise<string> {
-  const openaiApiKey = Deno.env.get('OPENAI_API_KEY')
   const geminiApiKey = Deno.env.get('GEMINI_API_KEY')
+  const openaiApiKey = Deno.env.get('OPENAI_API_KEY')
 
-  // Try OpenAI first, then Gemini as fallback
-  if (openaiApiKey) {
+  // Try Gemini first, then OpenAI as fallback
+  if (geminiApiKey) {
     try {
-      return await callOpenAI(prompt, openaiApiKey)
+      return await callGemini(prompt, geminiApiKey)
     } catch (error) {
-      console.error('OpenAI API error:', error)
-      if (geminiApiKey) {
-        return await callGemini(prompt, geminiApiKey)
+      console.error('Gemini API error:', error)
+      if (openaiApiKey) {
+        return await callOpenAI(prompt, openaiApiKey)
       }
     }
-  } else if (geminiApiKey) {
-    return await callGemini(prompt, geminiApiKey)
+  } else if (openaiApiKey) {
+    return await callOpenAI(prompt, openaiApiKey)
   }
 
   // Fallback response if no API keys are available
-  return `I understand you're asking about cultural preferences and business opportunities. While I don't have access to real-time cultural data at the moment, I can share that successful businesses typically focus on understanding local preferences, seasonal trends, and community values. 
+  throw new Error('NO_LLM_API_KEYS_CONFIGURED')
+}
 
 For your specific question: "${prompt.split('USER QUESTION: ')[1]?.split('\n')[0] || 'your inquiry'}", I'd recommend researching local competitors, engaging with community groups, and testing small-scale initiatives to understand what resonates with your target audience.
 
