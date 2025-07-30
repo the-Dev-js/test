@@ -65,31 +65,13 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
     setInputValue('');
     setIsLoading(true);
 
-    // Call Edge Function for all interactions - let AI handle the conversation flow
+    // Call Edge Function for all interactions
     try {
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
       const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
       
       if (!supabaseUrl || !supabaseAnonKey) {
         throw new Error('Supabase configuration missing. Please set up your Supabase environment variables.');
-      }
-
-      // Update phase based on user input and current phase
-      let nextPhase = onboardingPhase;
-      if (onboardingPhase === 'initial_question') {
-        if (currentInput.toLowerCase().includes('learn') || currentInput.toLowerCase().includes('more') || currentInput.toLowerCase().includes('how') || currentInput.toLowerCase().includes('what') || currentInput.toLowerCase().includes('explain')) {
-          nextPhase = 'explaining_app_sent';
-        } else if (currentInput.toLowerCase().includes('jump') || currentInput.toLowerCase().includes('ready') || currentInput.toLowerCase().includes('ask') || currentInput.toLowerCase().includes('question')) {
-          nextPhase = 'awaiting_business_type';
-        }
-      } else if (onboardingPhase === 'explaining_app_sent') {
-        nextPhase = 'awaiting_business_type';
-      } else if (onboardingPhase === 'awaiting_business_type') {
-        setUserBusinessType(currentInput);
-        nextPhase = 'awaiting_location';
-      } else if (onboardingPhase === 'awaiting_location') {
-        setUserLocation(currentInput);
-        nextPhase = 'ready_for_query';
       }
 
       const response = await fetch(`${supabaseUrl}/functions/v1/chat-orchestrator`, {
@@ -160,6 +142,19 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
         return;
       }
       
+      // Update phase from backend response
+      if (data.nextPhase) {
+        const newPhase = data.nextPhase as OnboardingPhase;
+        setOnboardingPhase(newPhase);
+        
+        // Update business type and location based on phase transitions
+        if (onboardingPhase === 'awaiting_business_type' && newPhase === 'awaiting_location') {
+          setUserBusinessType(currentInput);
+        } else if (onboardingPhase === 'awaiting_location' && newPhase === 'ready_for_query') {
+          setUserLocation(currentInput);
+        }
+      }
+      
       // Clean the bot response to remove emojis and *** symbols
       const cleanedResponse = cleanBotResponse(data.response || 'Sorry, I could not process your request at this time.');
       
@@ -171,7 +166,6 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
       };
       
       setMessages(prev => [...prev, botMessage]);
-      setOnboardingPhase(nextPhase);
       
     } catch (error) {
       console.error('Error calling chat orchestrator:', error);

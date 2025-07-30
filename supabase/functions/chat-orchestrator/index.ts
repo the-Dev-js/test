@@ -8,6 +8,11 @@ interface ChatRequest {
   location?: string
 }
 
+interface OnboardingResponse {
+  response: string
+  nextPhase: string
+}
+
 interface QlooInsight {
   preferences: string[]
   trends: string[]
@@ -127,10 +132,11 @@ Maintain a professional yet accessible tone. Focus on practical, implementable a
 }
 
 // Enhanced onboarding prompt with clearer instructions
-function buildOnboardingPrompt(message: string, phase: string): string {
+function buildOnboardingPrompt(message: string, phase: string, nextPhase: string): string {
   const basePrompt = `You are a Cultural Intelligence Assistant helping businesses expand internationally. Guide users through our onboarding process naturally and conversationally.
 
 Current Phase: ${phase}
+Next Phase: ${nextPhase}
 User Message: ${message}
 
 Instructions:
@@ -288,11 +294,39 @@ async function callLLM(prompt: string): Promise<string> {
 }
 
 // Generate onboarding responses with enhanced error handling
-async function generateOnboardingResponse(message: string, phase: string): Promise<string> {
-  const prompt = buildOnboardingPrompt(message, phase)
+async function generateOnboardingResponse(message: string, phase: string): Promise<OnboardingResponse> {
+  // Determine next phase based on current phase and user message
+  let nextPhase = phase
+  
+  if (phase === 'initial_question') {
+    if (message.toLowerCase().includes('learn') || 
+        message.toLowerCase().includes('more') || 
+        message.toLowerCase().includes('how') || 
+        message.toLowerCase().includes('what') || 
+        message.toLowerCase().includes('explain')) {
+      nextPhase = 'explaining_app_sent'
+    } else if (message.toLowerCase().includes('jump') || 
+               message.toLowerCase().includes('ready') || 
+               message.toLowerCase().includes('ask') || 
+               message.toLowerCase().includes('question') ||
+               message.toLowerCase().includes('restaurant') ||
+               message.toLowerCase().includes('retail') ||
+               message.toLowerCase().includes('business')) {
+      nextPhase = 'awaiting_business_type'
+    }
+  } else if (phase === 'explaining_app_sent') {
+    nextPhase = 'awaiting_business_type'
+  } else if (phase === 'awaiting_business_type') {
+    nextPhase = 'awaiting_location'
+  } else if (phase === 'awaiting_location') {
+    nextPhase = 'ready_for_query'
+  }
+
+  const prompt = buildOnboardingPrompt(message, phase, nextPhase)
   
   try {
-    return await callLLM(prompt)
+    const response = await callLLM(prompt)
+    return { response, nextPhase }
   } catch (error) {
     console.error('Error generating onboarding response:', error)
     throw new Error(ERROR_TYPES.ONBOARDING_ERROR)
@@ -300,21 +334,55 @@ async function generateOnboardingResponse(message: string, phase: string): Promi
 }
 
 // Fallback onboarding responses
-function getFallbackOnboardingResponse(phase: string): string {
+function getFallbackOnboardingResponse(phase: string, message: string): OnboardingResponse {
+  // Determine next phase (same logic as in generateOnboardingResponse)
+  let nextPhase = phase
+  
+  if (phase === 'initial_question') {
+    if (message.toLowerCase().includes('learn') || 
+        message.toLowerCase().includes('more') || 
+        message.toLowerCase().includes('how') || 
+        message.toLowerCase().includes('what') || 
+        message.toLowerCase().includes('explain')) {
+      nextPhase = 'explaining_app_sent'
+    } else if (message.toLowerCase().includes('jump') || 
+               message.toLowerCase().includes('ready') || 
+               message.toLowerCase().includes('ask') || 
+               message.toLowerCase().includes('question') ||
+               message.toLowerCase().includes('restaurant') ||
+               message.toLowerCase().includes('retail') ||
+               message.toLowerCase().includes('business')) {
+      nextPhase = 'awaiting_business_type'
+    }
+  } else if (phase === 'explaining_app_sent') {
+    nextPhase = 'awaiting_business_type'
+  } else if (phase === 'awaiting_business_type') {
+    nextPhase = 'awaiting_location'
+  } else if (phase === 'awaiting_location') {
+    nextPhase = 'ready_for_query'
+  }
+
+  let response: string
   switch (phase) {
     case 'initial_question':
     case 'explaining_app_sent':
-      return "Welcome! I'm here to help you understand cultural preferences for your business expansion. To get started, could you tell me what type of business you have? (e.g., e-commerce, restaurant, tech startup, retail, etc.)"
+      response = "Welcome! I'm here to help you understand cultural preferences for your business expansion. To get started, could you tell me what type of business you have? (e.g., e-commerce, restaurant, tech startup, retail, etc.)"
+      break
     
     case 'awaiting_business_type':
-      return "I'd love to help you with cultural insights! Could you please tell me what type of business you have? This will help me provide more relevant advice."
+      response = "Great! Now, which country or region are you looking to expand to? This will help me provide specific cultural insights for that market."
+      break
     
     case 'awaiting_location':
-      return "Great! Now, which country or region are you looking to expand to? This will help me provide specific cultural insights for that market."
+      response = "Perfect! I now have all the information I need. You can ask me any questions about cultural preferences, local trends, or business opportunities for your market expansion."
+      break
     
     default:
-      return "I'm here to help you understand cultural preferences for international business expansion. What would you like to know?"
+      response = "I'm here to help you understand cultural preferences for international business expansion. What would you like to know?"
+      break
   }
+  
+  return { response, nextPhase }
 }
 
 // Enhanced error response creation
@@ -371,17 +439,23 @@ serve(async (req) => {
     // Handle onboarding phases
     if (phase !== 'ready_for_query') {
       try {
-        const onboardingResponse = await generateOnboardingResponse(message, phase)
+        const onboardingResult = await generateOnboardingResponse(message, phase)
         return new Response(
-          JSON.stringify({ response: onboardingResponse }),
+          JSON.stringify({ 
+            response: onboardingResult.response, 
+            nextPhase: onboardingResult.nextPhase 
+          }),
           { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         )
       } catch (error) {
         console.error('Onboarding error:', error)
         // Provide fallback response for onboarding
-        const fallbackResponse = getFallbackOnboardingResponse(phase)
+        const fallbackResult = getFallbackOnboardingResponse(phase, message)
         return new Response(
-          JSON.stringify({ response: fallbackResponse }),
+          JSON.stringify({ 
+            response: fallbackResult.response, 
+            nextPhase: fallbackResult.nextPhase 
+          }),
           { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         )
       }
