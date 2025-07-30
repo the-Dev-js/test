@@ -108,7 +108,19 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
       });
 
       if (!response.ok) {
-        throw new Error(`API request failed: ${response.status}`);
+        let errorMessage = `API request failed: ${response.status}`;
+        try {
+          const errorData = await response.json();
+          if (errorData.code === 'rate-limited') {
+            errorMessage = 'The AI service is currently rate-limited. Please wait a moment and try again.';
+          } else if (errorData.message) {
+            errorMessage = errorData.message;
+          }
+        } catch (parseError) {
+          // If we can't parse the error response, use the generic message
+          console.error('Failed to parse error response:', parseError);
+        }
+        throw new Error(errorMessage);
       }
 
       const data = await response.json();
