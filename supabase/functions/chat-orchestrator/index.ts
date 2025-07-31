@@ -123,7 +123,6 @@ CULTURAL CONTEXT FOR ${location.toUpperCase()}:
 - Cultural Clusters: ${insights.culturalClusters.join(', ')}
 
 BUSINESS CONTEXT:
-- Business Type: ${businessType}
 - Target Market: ${location}
 
 USER QUESTION: ${message}
@@ -161,8 +160,6 @@ TONE & STYLE:
 - Be direct and actionable - avoid generic advice
 - Reference the cultural data provided to justify your recommendations
 - Focus on competitive advantages the user can gain through cultural intelligence`
-}
-
 // Enhanced onboarding prompt with clearer instructions
 function buildOnboardingPrompt(message: string, subPhase: string, nextPhase: string): string {
   const basePrompt = `Vous êtes un Assistant d'Intelligence Culturelle aidant les entreprises à s'étendre à l'international. Guidez les utilisateurs à travers notre processus d'onboarding de manière naturelle et conversationnelle.
