@@ -380,7 +380,7 @@ serve(async (req) => {
 
     const { message, phase } = requestData
 
-    if (!message || !phase) {
+    if (!phase || (phase !== 'fetch_qloo_insights' && !message)) {
       return createErrorResponse(ERROR_TYPES.INVALID_REQUEST, 400)
     }
 
