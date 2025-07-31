@@ -275,7 +275,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
                 <div>
                   <h1 className="text-lg font-semibold text-[#111827]">Cultural AI</h1>
                   <p className="text-xs text-[#6B7280]">
-                    {currentAppPhase === 'onboarding' ? 'Mode découverte' : `Analyse: ${targetLocation} - ${userBusinessType}`}
+                    {currentAppPhase === 'onboarding' ? 'Discovery Mode' : `Analysis: ${targetLocation} - ${userBusinessType}`}
                   </p>
                 </div>
               </div>
@@ -397,8 +397,8 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
                     onKeyPress={handleKeyPress}
                     placeholder={
                       currentAppPhase === 'onboarding' 
-                        ? "Posez vos questions sur l'application, ses fonctionnalités, ses cas d'usage..."
-                        : "Posez vos questions sur les stratégies culturelles, les préférences locales..."
+                        ? "Ask questions about the application, its features, use cases..."
+                        : "Ask questions about cultural strategies, local preferences..."
                     }
                     className="w-full bg-transparent text-gray-800 placeholder-gray-500 resize-none outline-none py-2 px-0 min-h-[24px] max-h-[120px] overflow-y-auto"
                     rows={1}
