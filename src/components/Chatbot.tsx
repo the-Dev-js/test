@@ -75,7 +75,8 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
         body: JSON.stringify({
           phase: 'fetch_qloo_insights',
           location: location,
-          businessType: businessType
+          businessType: businessType,
+          message: ''
         })
       });
 
