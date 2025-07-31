@@ -164,49 +164,49 @@ TONE & STYLE:
 
 // Enhanced onboarding prompt with clearer instructions
 function buildOnboardingPrompt(message: string, subPhase: string, nextPhase: string): string {
-  const basePrompt = `Vous êtes un Assistant d'Intelligence Culturelle spécialisé dans l'aide aux entreprises. Guidez les utilisateurs à travers notre processus d'onboarding de manière naturelle et conversationnelle.
+  const basePrompt = `You are a Cultural Intelligence Assistant specialized in helping businesses. Guide users through our onboarding process in a natural and conversational manner.
 
-INFORMATIONS CLÉS SUR CULTURAL AI :
-- Application GRATUITE et ouverte à TOUS les types de business
-- Ne se limite PAS à l'expansion internationale : aide aussi les entreprises LOCALES
-- Cas d'usage locaux : s'intégrer dans leur environnement, adapter leur offre, trouver des idées de produits, améliorer leurs services, développer des stratégies marketing
-- Cas d'usage internationaux : expansion globale, compréhension des cultures étrangères, adaptation aux marchés internationaux
-- Alimentée par l'API Qloo (données culturelles) + IA avancée (Gemini, GPT)
-- Interface conversationnelle intuitive pour obtenir des insights actionnables
+KEY INFORMATION ABOUT CULTURAL AI:
+- FREE application open to ALL types of businesses
+- NOT limited to international expansion: also helps LOCAL businesses
+- Local use cases: integrate into their environment, adapt their offering, find product ideas, improve their services, develop marketing strategies
+- International use cases: global expansion, understanding foreign cultures, adapting to international markets
+- Powered by Qloo API (cultural data) + advanced AI (Gemini, GPT)
+- Intuitive conversational interface to get actionable insights
 
-INSTRUCTIONS DE CONVERSATION :
-- ÉVITEZ de commencer chaque réponse par "Bonjour" ou "Ravi de..." après la première interaction
-- Variez vos salutations et transitions pour rendre la conversation naturelle
-- Soyez chaleureux mais pas répétitif dans vos formules de politesse
-- Adaptez votre ton selon le contexte de la question
-- Guidez activement les utilisateurs sur comment utiliser l'application
+CONVERSATION INSTRUCTIONS:
+- AVOID starting each response with "Hello" or "Pleased to..." after the first interaction
+- Vary your greetings and transitions to make the conversation natural
+- Be warm but not repetitive in your polite formulas
+- Adapt your tone according to the context of the question
+- Actively guide users on how to use the application
 
-Phase actuelle: ${subPhase}
-Prochaine phase: ${nextPhase}
-Message utilisateur: ${message}
+Current phase: ${subPhase}
+Next phase: ${nextPhase}
+User message: ${message}
 
 Instructions:
-- Soyez chaleureux, professionnel et encourageant
-- Répondez de manière claire et concise
-- Gardez les réponses courtes (moins de 150 mots)
-- Utilisez un ton conversationnel en français
-- Expliquez les fonctionnalités et cas d'usage de l'application`
+- Be warm, professional and encouraging
+- Respond clearly and concisely
+- Keep responses short (less than 150 words)
+- Use a conversational tone in English
+- Explain the features and use cases of the application`
 
   switch (subPhase) {
     case 'initial_question':
       return `${basePrompt}
 
-L'utilisateur vient de poser sa première question. Accueillez-le chaleureusement (UNE SEULE FOIS) et expliquez les capacités polyvalentes de Cultural AI. Mettez l'accent sur le fait que l'app aide AUTANT les entreprises locales que celles qui veulent s'étendre à l'international. Encouragez-le à poser des questions sur le fonctionnement, les cas d'usage variés, ou les fonctionnalités.`
+The user has just asked their first question. Welcome them warmly (ONLY ONCE) and explain the versatile capabilities of Cultural AI. Emphasize that the app helps LOCAL businesses AS MUCH as those wanting to expand internationally. Encourage them to ask questions about how it works, various use cases, or features.`
 
     case 'explaining_app':
       return `${basePrompt}
 
-L'utilisateur pose des questions sur l'application. N'utilisez PAS de salutation répétitive. Expliquez comment Cultural AI fonctionne, ses cas d'usage VARIÉS (local ET international : restaurants, e-commerce, startups, marketing, adaptation produits, etc.), et comment l'IA culturelle peut les aider. Insistez sur la gratuité et l'accessibilité. Mentionnez qu'ils peuvent cliquer sur le bouton de démarrage quand ils sont prêts pour une analyse personnalisée.`
+The user is asking questions about the application. Do NOT use repetitive greetings. Explain how Cultural AI works, its VARIED use cases (local AND international: restaurants, e-commerce, startups, marketing, product adaptation, etc.), and how cultural AI can help them. Emphasize the free access and accessibility. Mention that they can click the start button when ready for a personalized analysis.`
 
     default:
       return `${basePrompt}
 
-Répondez de manière utile au message de l'utilisateur sans salutation répétitive et guidez-le vers une meilleure compréhension de l'application et de ses possibilités.`
+Respond helpfully to the user's message without repetitive greetings and guide them toward a better understanding of the application and its possibilities.`
   }
 }
 
@@ -382,11 +382,11 @@ function getFallbackOnboardingResponse(subPhase: string, message: string): Onboa
   let nextPhase = subPhase
   
   if (subPhase === 'initial_question') {
-    if (message.toLowerCase().includes('comment') || 
-        message.toLowerCase().includes('fonctionn') || 
-        message.toLowerCase().includes('utilise') || 
-        message.toLowerCase().includes('marche') || 
-        message.toLowerCase().includes('explique') ||
+    if (message.toLowerCase().includes('how') || 
+        message.toLowerCase().includes('work') || 
+        message.toLowerCase().includes('use') || 
+        message.toLowerCase().includes('function') || 
+        message.toLowerCase().includes('explain') ||
         message.toLowerCase().includes('how') ||
         message.toLowerCase().includes('what') ||
         message.toLowerCase().includes('explain')) {
@@ -399,15 +399,15 @@ function getFallbackOnboardingResponse(subPhase: string, message: string): Onboa
   let response: string
   switch (subPhase) {
     case 'initial_question':
-      response = "Bonjour ! Je suis votre Assistant IA Culturel. Cultural AI est une application gratuite qui aide TOUS les types d'entreprises - que vous souhaitiez vous développer à l'international OU améliorer votre positionnement local. Je peux vous expliquer comment elle fonctionne, ses nombreux cas d'usage, et comment l'intelligence culturelle peut transformer votre approche business. Que souhaitez-vous découvrir ?"
+      response = "Hello! I'm your Cultural AI Assistant. Cultural AI is a free application that helps ALL types of businesses - whether you want to expand internationally OR improve your local positioning. I can explain how it works, its many use cases, and how cultural intelligence can transform your business approach. What would you like to discover?"
       break
     
     case 'explaining_app':
-      response = "Cultural AI combine l'API Qloo et des IA avancées pour vous fournir des insights culturels personnalisés. Que vous soyez une entreprise locale cherchant à mieux s'adapter à votre environnement, à développer de nouveaux produits, ou une entreprise visant l'international, l'app analyse les préférences culturelles et vous propose des stratégies concrètes. C'est entièrement gratuit ! Avez-vous d'autres questions ?"
+      response = "Cultural AI combines Qloo API and advanced AI to provide you with personalized cultural insights. Whether you're a local business looking to better adapt to your environment, develop new products, or a business targeting international markets, the app analyzes cultural preferences and offers you concrete strategies. It's completely free! Do you have any other questions?"
       break
     
     default:
-      response = "Je suis là pour vous aider à comprendre comment Cultural AI peut transformer votre approche business grâce à l'intelligence culturelle, que ce soit localement ou internationalement. Que souhaitez-vous savoir ?"
+      response = "I'm here to help you understand how Cultural AI can transform your business approach through cultural intelligence, whether locally or internationally. What would you like to know?"
       break
   }
   
