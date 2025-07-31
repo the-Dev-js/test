@@ -106,7 +106,7 @@ const AnimatedPhone = () => {
             </div>
             <div>
               <h3 className="text-[#111827] font-semibold text-sm">Cultural AI Assistant</h3>
-              <p className="text-[#1877F2] text-xs">Online • Powered by GPT & Qloo</p>
+              <p className="text-[#1877F2] text-xs">Online • Powered by Gemini & Qloo</p>
             </div>
           </div>
           

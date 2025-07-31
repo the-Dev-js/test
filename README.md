@@ -2,7 +2,7 @@ QLOO-WEBAPP-PROTOTYPE
 
 ## Cultural AI - Conquer New Markets With Intelligence
 
-AI-powered cultural intelligence platform helping businesses expand globally with insights from GPT, Claude, Gemini & Qloo API.
+AI-powered cultural intelligence platform helping businesses expand globally with insights from Gemini & Qloo API.
 
 ## Setup Instructions
 
@@ -24,8 +24,7 @@ AI-powered cultural intelligence platform helping businesses expand globally wit
 In your Supabase dashboard, go to Edge Functions → chat-orchestrator → Settings and add these environment variables:
 
 - `QLOO_API_KEY`: Your Qloo API key
-- `OPENAI_API_KEY`: Your OpenAI API key (optional)
-- `GEMINI_API_KEY`: Your Google Gemini API key (optional)
+- `GEMINI_API_KEY`: Your Google Gemini API key
 
 ### 4. Run the Application
 
@@ -37,7 +36,7 @@ npm run dev
 ## Features
 
 - **Cultural Intelligence**: Powered by Qloo API for deep cultural insights
-- **AI-Powered Responses**: Integration with OpenAI GPT and Google Gemini
+- **AI-Powered Responses**: Integration with Google Gemini
 - **Serverless Architecture**: Uses Supabase Edge Functions for secure API handling
 - **Real-time Chat**: Interactive chatbot interface for cultural market research
 - **Secure**: API keys are stored securely in Supabase, never exposed to frontend
@@ -48,13 +47,13 @@ npm run dev
 2. The frontend sends the request to a Supabase Edge Function
 3. The Edge Function calls Qloo API to get cultural insights for the target market
 4. Cultural data is combined with the user's question to create an enhanced prompt
-5. The enhanced prompt is sent to an LLM (OpenAI or Gemini) for intelligent analysis
+5. The enhanced prompt is sent to Gemini for intelligent analysis
 6. The AI response is returned to the user with actionable cultural insights
 
 ## Architecture
 
 ```
-Frontend (React) → Supabase Edge Function → Qloo API + LLM APIs → Response
+Frontend (React) → Supabase Edge Function → Qloo API + Gemini API → Response
 ```
 
 This architecture ensures:
