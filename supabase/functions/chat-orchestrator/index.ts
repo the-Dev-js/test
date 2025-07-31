@@ -75,11 +75,14 @@ async function getQlooInsights(location: string, businessType: string): Promise<
   }
 
   try {
-    // Build query parameters for the GET request
+    // Build query parameters according to Qloo v2 API documentation
     const params = new URLSearchParams({
-      location: location,
-      entity_type: businessType
+      'filter.location.query': location,
+      'filter.type': 'urn:entity:place'
     })
+    
+    // Note: signal.interests.entities is optional but could be added later
+    // for more personalized insights based on business type
     
     // Construct the full URL with query parameters
     const apiUrl = `https://hackathon.api.qloo.com/v2/insights?${params.toString()}`
