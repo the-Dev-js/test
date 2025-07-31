@@ -129,13 +129,38 @@ BUSINESS CONTEXT:
 USER QUESTION: ${message}
 
 RESPONSE REQUIREMENTS:
-Please structure your response in exactly 3 sections (maximum 300 words total):
+Please provide a comprehensive, detailed analysis structured in exactly 4 sections. Be thorough and specific - your goal is to give the user immediately actionable intelligence they can implement:
 
-1. **Cultural Analysis**: Key cultural factors affecting this business opportunity
-2. **Strategic Recommendations**: 3-4 specific, actionable strategies
-3. **Next Steps**: Concrete actions the business should take immediately
+1. **Deep Cultural Analysis** (200-300 words):
+   - Explain HOW the cultural preferences, trends, and clusters specifically impact this business type
+   - Identify cultural opportunities and potential pitfalls
+   - Analyze consumer behavior patterns relevant to this business
+   - Discuss cultural nuances that competitors might miss
 
-Maintain a professional yet accessible tone. Focus on practical, implementable advice based on the cultural insights provided.`
+2. **Strategic Recommendations** (300-400 words):
+   - Provide 4-5 specific, actionable strategies with concrete examples
+   - For each strategy, explain: WHAT to do, HOW to implement it, and WHY it works in this culture
+   - Include specific tactics: pricing approaches, product adaptations, marketing messages, distribution channels
+   - Reference successful case studies or approaches when possible
+
+3. **Implementation Roadmap** (200-250 words):
+   - Provide a step-by-step action plan with timelines
+   - Identify key resources needed (budget, partnerships, staff)
+   - Highlight critical success factors and potential obstacles
+   - Suggest metrics to track progress and success
+
+4. **Cultural Intelligence Insights** (150-200 words):
+   - Share insider knowledge about local business practices
+   - Explain cultural do's and don'ts specific to this business type
+   - Provide communication tips and relationship-building advice
+   - Mention seasonal considerations, holidays, or cultural events that could impact business
+
+TONE & STYLE:
+- Write as an expert consultant who has deep experience in this market
+- Use specific examples, numbers, and concrete details whenever possible
+- Be direct and actionable - avoid generic advice
+- Reference the cultural data provided to justify your recommendations
+- Focus on competitive advantages the user can gain through cultural intelligence`
 }
 
 // Enhanced onboarding prompt with clearer instructions
