@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Send, Download, Bot, User, Globe, Sparkles, Plus } from 'lucide-react';
+import { ArrowLeft, Send, Download, Bot, User, Globe, Sparkles, Play } from 'lucide-react';
+import ContextInputModal from './ContextInputModal';
 
 interface ChatMessage {
   id: number;
@@ -13,7 +14,8 @@ interface ChatbotProps {
   onBackToHome: () => void;
 }
 
-type OnboardingPhase = 'initial_question' | 'explaining_app_sent' | 'awaiting_business_type' | 'awaiting_location' | 'ready_for_query';
+type OnboardingSubPhase = 'initial_question' | 'explaining_app';
+type AppPhase = 'onboarding' | 'strategic';
 
 const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
   // Function to clean bot responses
@@ -40,15 +42,90 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
     {
       id: 1,
       type: 'bot',
-      content: cleanBotResponse("Hello! 👋 I'm your Cultural AI Assistant, powered by Qloo API and advanced AI models.\n\nI can help you understand cultural preferences, local trends, and market opportunities anywhere in the world to expand your business successfully.\n\n**Would you like to:**\n\n🔍 **Learn more** about how I work and what I can do for your business?\n\n🚀 **Jump right in** and ask me a question about a specific market?\n\nJust let me know your preference!"),
+      content: cleanBotResponse("Bonjour ! Je suis votre Assistant IA Culturel, alimenté par l'API Qloo et des modèles d'IA avancés.\n\nJe peux vous aider à comprendre les préférences culturelles, les tendances locales et les opportunités de marché partout dans le monde pour développer votre entreprise avec succès.\n\nN'hésitez pas à me poser des questions sur :\n- Comment fonctionne cette application\n- Quels sont les cas d'usage possibles\n- Comment l'IA culturelle peut vous aider\n- Les fonctionnalités disponibles\n\nUne fois que vous aurez compris le potentiel de l'outil, vous pourrez cliquer sur le bouton de démarrage pour commencer votre analyse personnalisée !"),
       timestamp: new Date()
     }
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [onboardingPhase, setOnboardingPhase] = useState<OnboardingPhase>('initial_question');
+  const [currentAppPhase, setCurrentAppPhase] = useState<AppPhase>('onboarding');
+  const [onboardingSubPhase, setOnboardingSubPhase] = useState<OnboardingSubPhase>('initial_question');
+  const [showContextModal, setShowContextModal] = useState(false);
+  const [targetLocation, setTargetLocation] = useState<string | null>(null);
   const [userBusinessType, setUserBusinessType] = useState<string | null>(null);
-  const [userLocation, setUserLocation] = useState<string | null>(null);
+  const [qlooInsights, setQlooInsights] = useState<any | null>(null);
+
+  const handleContextSubmit = async (location: string, businessType: string) => {
+    setIsLoading(true);
+    
+    try {
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+      
+      if (!supabaseUrl || !supabaseAnonKey) {
+        throw new Error('Configuration Supabase manquante. Veuillez configurer vos variables d\'environnement Supabase.');
+      }
+
+      const response = await fetch(`${supabaseUrl}/functions/v1/chat-orchestrator`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${supabaseAnonKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          phase: 'fetch_qloo_insights',
+          location: location,
+          businessType: businessType
+        })
+      });
+
+      if (!response.ok) {
+        let errorMessage = `Échec de la requête API : ${response.status}`;
+        try {
+          const errorData = await response.json();
+          if (errorData.message) {
+            errorMessage = errorData.message;
+          }
+        } catch (parseError) {
+          console.error('Échec de l\'analyse de la réponse d\'erreur:', parseError);
+        }
+        throw new Error(errorMessage);
+      }
+
+      const insights = await response.json();
+      
+      // Store the insights and update state
+      setQlooInsights(insights);
+      setTargetLocation(location);
+      setUserBusinessType(businessType);
+      setCurrentAppPhase('strategic');
+      setShowContextModal(false);
+      
+      // Add a transition message from the bot
+      const transitionMessage: ChatMessage = {
+        id: messages.length + 1,
+        type: 'bot',
+        content: cleanBotResponse(`Parfait ! J'ai récupéré les insights culturels pour ${location} dans le secteur ${businessType}. Je peux maintenant vous fournir des conseils stratégiques personnalisés basés sur les données culturelles spécifiques à votre marché cible.\n\nVous pouvez me poser des questions comme :\n- Quels produits adapter pour ce marché ?\n- Quelle stratégie d'implantation adopter ?\n- Y a-t-il des préférences culturelles spécifiques à prendre en compte ?\n- Comment adapter ma communication marketing ?\n\nQue souhaitez-vous savoir ?`),
+        timestamp: new Date()
+      };
+      
+      setMessages(prev => [...prev, transitionMessage]);
+      
+    } catch (error) {
+      console.error('Erreur lors de la récupération des insights Qloo:', error);
+      
+      const errorMessage: ChatMessage = {
+        id: messages.length + 1,
+        type: 'bot',
+        content: cleanBotResponse(`Je m'excuse, mais j'ai rencontré un problème lors de la récupération des données culturelles. Cela pourrait être dû à des problèmes de connectivité réseau ou de maintenance du serveur.\n\nVeuillez réessayer dans un moment. Si le problème persiste, vous pouvez toujours me poser des questions générales sur l'intelligence culturelle !`),
+        timestamp: new Date()
+      };
+      
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleSendMessage = async () => {
     if (!inputValue.trim()) return;
@@ -65,13 +142,27 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
     setInputValue('');
     setIsLoading(true);
 
-    // Call Edge Function for all interactions
     try {
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
       const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
       
       if (!supabaseUrl || !supabaseAnonKey) {
-        throw new Error('Supabase configuration missing. Please set up your Supabase environment variables.');
+        throw new Error('Configuration Supabase manquante. Veuillez configurer vos variables d\'environnement Supabase.');
+      }
+
+      // Prepare request body based on current app phase
+      let requestBody: any = {
+        message: currentInput
+      };
+
+      if (currentAppPhase === 'onboarding') {
+        requestBody.phase = 'onboarding_sub_phase';
+        requestBody.onboardingSubPhase = onboardingSubPhase;
+      } else if (currentAppPhase === 'strategic') {
+        requestBody.phase = 'strategic';
+        requestBody.targetLocation = targetLocation;
+        requestBody.userBusinessType = userBusinessType;
+        requestBody.qlooInsights = qlooInsights;
       }
 
       const response = await fetch(`${supabaseUrl}/functions/v1/chat-orchestrator`, {
@@ -80,56 +171,26 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
           'Authorization': `Bearer ${supabaseAnonKey}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          message: currentInput,
-          phase: onboardingPhase,
-          businessType: userBusinessType || null,
-          location: userLocation || null,
-          context: 'conversation'
-        })
+        body: JSON.stringify(requestBody)
       });
 
       if (!response.ok) {
-        let errorMessage = `API request failed: ${response.status}`;
+        let errorMessage = `Échec de la requête API : ${response.status}`;
         try {
           const errorData = await response.json();
-          if (errorData.code === 'rate-limited') {
-            errorMessage = 'The AI service is currently rate-limited. Please wait a moment and try again.';
-          } else if (errorData.message) {
+          if (errorData.message) {
             errorMessage = errorData.message;
           }
         } catch (parseError) {
-          // If we can't parse the error response, use the generic message
-          console.error('Failed to parse error response:', parseError);
+          console.error('Échec de l\'analyse de la réponse d\'erreur:', parseError);
         }
         throw new Error(errorMessage);
       }
 
       const data = await response.json();
       
-      // Check for errors first
       if (data.error || data.errorType) {
-        let errorMessage = 'Sorry, I encountered an issue. Please try again.';
-        
-        switch (data.errorType) {
-          case 'QLOO_API_ERROR':
-            errorMessage = 'I\'m having trouble accessing cultural data right now. I can still help with general advice - please try rephrasing your question or try again in a moment.';
-            break;
-          case 'LLM_API_ERROR':
-            errorMessage = 'I\'m experiencing technical difficulties with my AI services. Please try again in a few moments.';
-            break;
-          case 'MISSING_API_KEYS':
-            errorMessage = 'The AI services are not properly configured. Please contact support or try again later.';
-            break;
-          case 'ONBOARDING_ERROR':
-            errorMessage = 'I\'m having trouble processing your request. Let me try to help you differently - what specific market or business question do you have?';
-            break;
-          case 'INVALID_REQUEST':
-            errorMessage = 'I didn\'t receive your message properly. Please try typing your question again.';
-            break;
-          default:
-            errorMessage = data.message || 'An unexpected error occurred. Please try again.';
-        }
+        const errorMessage = data.message || 'Une erreur inattendue s\'est produite. Veuillez réessayer.';
         
         const errorBotMessage: ChatMessage = {
           id: messages.length + 2,
@@ -142,21 +203,12 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
         return;
       }
       
-      // Update phase from backend response
-      if (data.nextPhase) {
-        const newPhase = data.nextPhase as OnboardingPhase;
-        setOnboardingPhase(newPhase);
-        
-        // Update business type and location based on phase transitions
-        if (onboardingPhase === 'awaiting_business_type' && newPhase === 'awaiting_location') {
-          setUserBusinessType(currentInput);
-        } else if (onboardingPhase === 'awaiting_location' && newPhase === 'ready_for_query') {
-          setUserLocation(currentInput);
-        }
+      // Update onboarding sub-phase if we're still in onboarding
+      if (currentAppPhase === 'onboarding' && data.nextPhase) {
+        setOnboardingSubPhase(data.nextPhase as OnboardingSubPhase);
       }
       
-      // Clean the bot response to remove emojis and *** symbols
-      const cleanedResponse = cleanBotResponse(data.response || 'Sorry, I could not process your request at this time.');
+      const cleanedResponse = cleanBotResponse(data.response || 'Désolé, je n\'ai pas pu traiter votre demande pour le moment.');
       
       const botMessage: ChatMessage = {
         id: messages.length + 2,
@@ -168,12 +220,12 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
       setMessages(prev => [...prev, botMessage]);
       
     } catch (error) {
-      console.error('Error calling chat orchestrator:', error);
+      console.error('Erreur lors de l\'appel du chat orchestrator:', error);
       
       const errorMessage: ChatMessage = {
         id: messages.length + 2,
         type: 'bot',
-        content: cleanBotResponse(`I apologize, but I'm having trouble connecting to my services right now. This could be due to network connectivity issues or server maintenance.\n\nPlease try again in a moment. If the problem persists, you can still ask me general questions about cultural market research and I'll do my best to help!`),
+        content: cleanBotResponse(`Je m'excuse, mais j'ai des difficultés à me connecter à mes services en ce moment. Cela pourrait être dû à des problèmes de connectivité réseau ou de maintenance du serveur.\n\nVeuillez réessayer dans un moment. Si le problème persiste, vous pouvez toujours me poser des questions générales sur la recherche de marché culturel et je ferai de mon mieux pour vous aider !`),
         timestamp: new Date()
       };
       
@@ -192,8 +244,8 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
 
   const exportToPDF = () => {
     // Placeholder for PDF export functionality
-    console.log('Exporting conversation to PDF...');
-    alert('PDF export functionality will be implemented soon!');
+    console.log('Export de la conversation en PDF...');
+    alert('La fonctionnalité d\'export PDF sera bientôt implémentée !');
   };
 
   return (
@@ -221,7 +273,9 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
                 </div>
                 <div>
                   <h1 className="text-lg font-semibold text-[#111827]">Cultural AI</h1>
-                  <p className="text-xs text-[#6B7280]">Powered by Qloo & Gemini</p>
+                  <p className="text-xs text-[#6B7280]">
+                    {currentAppPhase === 'onboarding' ? 'Mode découverte' : `Analyse: ${targetLocation} - ${userBusinessType}`}
+                  </p>
                 </div>
               </div>
             </div>
@@ -325,16 +379,26 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
           <div className="border-t border-[#E5E7EB] p-4 bg-white shadow-md">
             <div className="max-w-4xl mx-auto">
               <div className="bg-gray-100 rounded-3xl shadow-sm flex items-center gap-2 p-2">
-                <button className="w-8 h-8 rounded-full flex items-center justify-center text-gray-500 hover:bg-gray-200 flex-shrink-0 transition-colors duration-200">
-                  <Plus className="w-5 h-5" />
-                </button>
+                {currentAppPhase === 'onboarding' && (
+                  <button 
+                    onClick={() => setShowContextModal(true)}
+                    className="w-8 h-8 rounded-full flex items-center justify-center text-white bg-gradient-to-r from-[#2563EB] to-[#1877F2] hover:shadow-lg hover:shadow-[#1877F2]/30 flex-shrink-0 transition-all duration-200 hover:scale-105"
+                    title="Commencer l'analyse culturelle"
+                  >
+                    <Play className="w-4 h-4" />
+                  </button>
+                )}
                 
                 <div className="flex-1">
                   <textarea
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                     onKeyPress={handleKeyPress}
-                    placeholder="Ask about cultural preferences, local tastes, or business opportunities..."
+                    placeholder={
+                      currentAppPhase === 'onboarding' 
+                        ? "Posez vos questions sur l'application, ses fonctionnalités, ses cas d'usage..."
+                        : "Posez vos questions sur les stratégies culturelles, les préférences locales..."
+                    }
                     className="w-full bg-transparent text-gray-800 placeholder-gray-500 resize-none outline-none py-2 px-0 min-h-[24px] max-h-[120px] overflow-y-auto"
                     rows={1}
                     disabled={isLoading}
@@ -352,6 +416,13 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
             </div>
           </div>
         </div>
+        
+        {/* Context Input Modal */}
+        <ContextInputModal
+          isOpen={showContextModal}
+          onClose={() => setShowContextModal(false)}
+          onSubmit={handleContextSubmit}
+        />
       </div>
     </div>
   );

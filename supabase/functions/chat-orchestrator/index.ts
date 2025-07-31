@@ -3,9 +3,11 @@ import { corsHeaders } from '../_shared/cors.ts'
 
 interface ChatRequest {
   message: string
-  phase: string
-  businessType?: string
-  location?: string
+  phase: 'onboarding_sub_phase' | 'strategic' | 'fetch_qloo_insights'
+  onboardingSubPhase?: string
+  userBusinessType?: string
+  targetLocation?: string
+  qlooInsights?: QlooInsight
 }
 
 interface OnboardingResponse {
@@ -132,45 +134,35 @@ Maintain a professional yet accessible tone. Focus on practical, implementable a
 }
 
 // Enhanced onboarding prompt with clearer instructions
-function buildOnboardingPrompt(message: string, phase: string, nextPhase: string): string {
-  const basePrompt = `You are a Cultural Intelligence Assistant helping businesses expand internationally. Guide users through our onboarding process naturally and conversationally.
+function buildOnboardingPrompt(message: string, subPhase: string, nextPhase: string): string {
+  const basePrompt = `Vous êtes un Assistant d'Intelligence Culturelle aidant les entreprises à s'étendre à l'international. Guidez les utilisateurs à travers notre processus d'onboarding de manière naturelle et conversationnelle.
 
-Current Phase: ${phase}
-Next Phase: ${nextPhase}
-User Message: ${message}
+Phase actuelle: ${subPhase}
+Prochaine phase: ${nextPhase}
+Message utilisateur: ${message}
 
 Instructions:
-- Be warm, professional, and encouraging
-- Ask one clear question at a time
-- Explain briefly why the information is needed
-- Keep responses concise (under 100 words)
-- Use a conversational tone`
+- Soyez chaleureux, professionnel et encourageant
+- Répondez de manière claire et concise
+- Gardez les réponses courtes (moins de 150 mots)
+- Utilisez un ton conversationnel en français
+- Expliquez les fonctionnalités et cas d'usage de l'application`
 
-  switch (phase) {
+  switch (subPhase) {
     case 'initial_question':
       return `${basePrompt}
 
-The user just asked their first question. Welcome them and explain that you need some basic information to provide the most relevant cultural insights. Ask for their business type first.`
+L'utilisateur vient de poser sa première question. Accueillez-le et expliquez les capacités de l'application Cultural AI. Encouragez-le à poser des questions sur le fonctionnement, les cas d'usage, ou les fonctionnalités.`
 
-    case 'explaining_app_sent':
+    case 'explaining_app':
       return `${basePrompt}
 
-You've explained the app. Now ask what type of business they have (e.g., e-commerce, restaurant, tech startup, retail, etc.).`
-
-    case 'awaiting_business_type':
-      return `${basePrompt}
-
-The user should be providing their business type. If they did, acknowledge it and ask for their target market/location. If unclear, politely ask them to clarify their business type.`
-
-    case 'awaiting_location':
-      return `${basePrompt}
-
-The user should be providing their target location/market. If they did, acknowledge it and let them know you're ready to help with cultural insights. If unclear, ask them to specify the country or region they want to expand to.`
+L'utilisateur pose des questions sur l'application. Expliquez comment Cultural AI fonctionne, ses cas d'usage (restaurants, e-commerce, startups, etc.), et comment l'IA culturelle peut les aider. Mentionnez qu'ils peuvent cliquer sur le bouton de démarrage quand ils sont prêts pour une analyse personnalisée.`
 
     default:
       return `${basePrompt}
 
-Respond helpfully to the user's message and guide them toward providing any missing information needed for cultural analysis.`
+Répondez de manière utile au message de l'utilisateur et guidez-le vers une meilleure compréhension de l'application.`
   }
 }
 
@@ -294,35 +286,29 @@ async function callLLM(prompt: string): Promise<string> {
 }
 
 // Generate onboarding responses with enhanced error handling
-async function generateOnboardingResponse(message: string, phase: string): Promise<OnboardingResponse> {
-  // Determine next phase based on current phase and user message
-  let nextPhase = phase
+async function generateOnboardingResponse(message: string, subPhase: string): Promise<OnboardingResponse> {
+  // Determine next sub-phase based on current sub-phase and user message
+  let nextPhase = subPhase
   
-  if (phase === 'initial_question') {
-    if (message.toLowerCase().includes('learn') || 
-        message.toLowerCase().includes('more') || 
-        message.toLowerCase().includes('how') || 
-        message.toLowerCase().includes('what') || 
+  if (subPhase === 'initial_question') {
+    // Check if user is asking for explanations
+    if (message.toLowerCase().includes('comment') || 
+        message.toLowerCase().includes('fonctionn') || 
+        message.toLowerCase().includes('utilise') || 
+        message.toLowerCase().includes('marche') || 
+        message.toLowerCase().includes('explique') ||
+        message.toLowerCase().includes('how') ||
+        message.toLowerCase().includes('what') ||
         message.toLowerCase().includes('explain')) {
-      nextPhase = 'explaining_app_sent'
-    } else if (message.toLowerCase().includes('jump') || 
-               message.toLowerCase().includes('ready') || 
-               message.toLowerCase().includes('ask') || 
-               message.toLowerCase().includes('question') ||
-               message.toLowerCase().includes('restaurant') ||
-               message.toLowerCase().includes('retail') ||
-               message.toLowerCase().includes('business')) {
-      nextPhase = 'awaiting_business_type'
+      nextPhase = 'explaining_app'
     }
-  } else if (phase === 'explaining_app_sent') {
-    nextPhase = 'awaiting_business_type'
-  } else if (phase === 'awaiting_business_type') {
-    nextPhase = 'awaiting_location'
-  } else if (phase === 'awaiting_location') {
-    nextPhase = 'ready_for_query'
+    // Otherwise stay in initial_question phase
+  } else if (subPhase === 'explaining_app') {
+    // Stay in explaining_app phase for follow-up questions
+    nextPhase = 'explaining_app'
   }
 
-  const prompt = buildOnboardingPrompt(message, phase, nextPhase)
+  const prompt = buildOnboardingPrompt(message, subPhase, nextPhase)
   
   try {
     const response = await callLLM(prompt)
@@ -334,51 +320,37 @@ async function generateOnboardingResponse(message: string, phase: string): Promi
 }
 
 // Fallback onboarding responses
-function getFallbackOnboardingResponse(phase: string, message: string): OnboardingResponse {
-  // Determine next phase (same logic as in generateOnboardingResponse)
-  let nextPhase = phase
+function getFallbackOnboardingResponse(subPhase: string, message: string): OnboardingResponse {
+  // Determine next sub-phase (same logic as in generateOnboardingResponse)
+  let nextPhase = subPhase
   
-  if (phase === 'initial_question') {
-    if (message.toLowerCase().includes('learn') || 
-        message.toLowerCase().includes('more') || 
-        message.toLowerCase().includes('how') || 
-        message.toLowerCase().includes('what') || 
+  if (subPhase === 'initial_question') {
+    if (message.toLowerCase().includes('comment') || 
+        message.toLowerCase().includes('fonctionn') || 
+        message.toLowerCase().includes('utilise') || 
+        message.toLowerCase().includes('marche') || 
+        message.toLowerCase().includes('explique') ||
+        message.toLowerCase().includes('how') ||
+        message.toLowerCase().includes('what') ||
         message.toLowerCase().includes('explain')) {
-      nextPhase = 'explaining_app_sent'
-    } else if (message.toLowerCase().includes('jump') || 
-               message.toLowerCase().includes('ready') || 
-               message.toLowerCase().includes('ask') || 
-               message.toLowerCase().includes('question') ||
-               message.toLowerCase().includes('restaurant') ||
-               message.toLowerCase().includes('retail') ||
-               message.toLowerCase().includes('business')) {
-      nextPhase = 'awaiting_business_type'
+      nextPhase = 'explaining_app'
     }
-  } else if (phase === 'explaining_app_sent') {
-    nextPhase = 'awaiting_business_type'
-  } else if (phase === 'awaiting_business_type') {
-    nextPhase = 'awaiting_location'
-  } else if (phase === 'awaiting_location') {
-    nextPhase = 'ready_for_query'
+  } else if (subPhase === 'explaining_app') {
+    nextPhase = 'explaining_app'
   }
 
   let response: string
-  switch (phase) {
+  switch (subPhase) {
     case 'initial_question':
-    case 'explaining_app_sent':
-      response = "Welcome! I'm here to help you understand cultural preferences for your business expansion. To get started, could you tell me what type of business you have? (e.g., e-commerce, restaurant, tech startup, retail, etc.)"
+      response = "Bonjour ! Je suis votre Assistant IA Culturel. Je peux vous expliquer comment cette application fonctionne, quels sont ses cas d'usage, et comment l'intelligence artificielle culturelle peut vous aider dans votre expansion internationale. Que souhaitez-vous savoir ?"
       break
     
-    case 'awaiting_business_type':
-      response = "Great! Now, which country or region are you looking to expand to? This will help me provide specific cultural insights for that market."
-      break
-    
-    case 'awaiting_location':
-      response = "Perfect! I now have all the information I need. You can ask me any questions about cultural preferences, local trends, or business opportunities for your market expansion."
+    case 'explaining_app':
+      response = "Cette application utilise l'API Qloo et l'IA Gemini pour vous fournir des insights culturels personnalisés. Elle peut vous aider à comprendre les préférences locales, les tendances culturelles, et les opportunités de marché dans n'importe quel pays. Avez-vous d'autres questions sur son fonctionnement ?"
       break
     
     default:
-      response = "I'm here to help you understand cultural preferences for international business expansion. What would you like to know?"
+      response = "Je suis là pour vous aider à comprendre les préférences culturelles pour l'expansion internationale des entreprises. Que souhaitez-vous savoir ?"
       break
   }
   
@@ -430,16 +402,45 @@ serve(async (req) => {
       return createErrorResponse(ERROR_TYPES.INVALID_REQUEST, 400)
     }
 
-    const { message, phase, businessType, location } = requestData
+    const { message, phase } = requestData
 
     if (!message || !phase) {
       return createErrorResponse(ERROR_TYPES.INVALID_REQUEST, 400)
     }
 
-    // Handle onboarding phases
-    if (phase !== 'ready_for_query') {
+    // Handle different phases
+    if (phase === 'fetch_qloo_insights') {
+      // Handle Qloo insights fetching
+      const { targetLocation, userBusinessType } = requestData
+      
+      if (!targetLocation || !userBusinessType) {
+        return createErrorResponse(ERROR_TYPES.INVALID_REQUEST, 400)
+      }
+
       try {
-        const onboardingResult = await generateOnboardingResponse(message, phase)
+        const insights = await getQlooInsights(targetLocation, userBusinessType)
+        return new Response(
+          JSON.stringify(insights),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        )
+      } catch (error) {
+        console.error('Error fetching Qloo insights:', error)
+        if (error.message === ERROR_TYPES.QLOO_API_ERROR) {
+          return createErrorResponse(ERROR_TYPES.QLOO_API_ERROR, 503)
+        } else {
+          return createErrorResponse(ERROR_TYPES.GENERAL_ERROR, 500)
+        }
+      }
+    } else if (phase === 'onboarding_sub_phase') {
+      // Handle onboarding sub-phases
+      const { onboardingSubPhase } = requestData
+      
+      if (!onboardingSubPhase) {
+        return createErrorResponse(ERROR_TYPES.INVALID_REQUEST, 400)
+      }
+
+      try {
+        const onboardingResult = await generateOnboardingResponse(message, onboardingSubPhase)
         return new Response(
           JSON.stringify({ 
             response: onboardingResult.response, 
@@ -450,7 +451,7 @@ serve(async (req) => {
       } catch (error) {
         console.error('Onboarding error:', error)
         // Provide fallback response for onboarding
-        const fallbackResult = getFallbackOnboardingResponse(phase, message)
+        const fallbackResult = getFallbackOnboardingResponse(onboardingSubPhase, message)
         return new Response(
           JSON.stringify({ 
             response: fallbackResult.response, 
@@ -459,41 +460,40 @@ serve(async (req) => {
           { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         )
       }
-    }
+    } else if (phase === 'strategic') {
+      // Handle strategic phase with Qloo insights
+      const { targetLocation, userBusinessType, qlooInsights } = requestData
+      
+      if (!targetLocation || !userBusinessType || !qlooInsights) {
+        return createErrorResponse(ERROR_TYPES.INVALID_REQUEST, 400)
+      }
 
-    // Handle main query phase
-    if (!businessType || !location) {
+      try {
+        // Build enhanced prompt with cultural context
+        const prompt = buildCulturalPrompt(message, qlooInsights, targetLocation, userBusinessType)
+        
+        // Get AI response
+        const aiResponse = await callLLM(prompt)
+        
+        return new Response(
+          JSON.stringify({ response: aiResponse }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        )
+      } catch (error) {
+        console.error('Error in strategic query processing:', error)
+        
+        if (error.message === ERROR_TYPES.LLM_API_ERROR) {
+          return createErrorResponse(ERROR_TYPES.LLM_API_ERROR, 503)
+        } else if (error.message === ERROR_TYPES.MISSING_API_KEYS) {
+          return createErrorResponse(ERROR_TYPES.MISSING_API_KEYS, 503)
+        } else {
+          return createErrorResponse(ERROR_TYPES.GENERAL_ERROR, 500)
+        }
+      }
+    } else {
       return createErrorResponse(ERROR_TYPES.INVALID_REQUEST, 400)
     }
 
-    try {
-      // Get cultural insights from Qloo
-      const insights = await getQlooInsights(location, businessType)
-      
-      // Build enhanced prompt with cultural context
-      const prompt = buildCulturalPrompt(message, insights, location, businessType)
-      
-      // Get AI response
-      const aiResponse = await callLLM(prompt)
-      
-      return new Response(
-        JSON.stringify({ response: aiResponse }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
-    } catch (error) {
-      console.error('Error in main query processing:', error)
-      
-      // Determine error type and return appropriate response
-      if (error.message === ERROR_TYPES.QLOO_API_ERROR) {
-        return createErrorResponse(ERROR_TYPES.QLOO_API_ERROR, 503)
-      } else if (error.message === ERROR_TYPES.LLM_API_ERROR) {
-        return createErrorResponse(ERROR_TYPES.LLM_API_ERROR, 503)
-      } else if (error.message === ERROR_TYPES.MISSING_API_KEYS) {
-        return createErrorResponse(ERROR_TYPES.MISSING_API_KEYS, 503)
-      } else {
-        return createErrorResponse(ERROR_TYPES.GENERAL_ERROR, 500)
-      }
-    }
   } catch (error) {
     console.error('Unexpected error in chat orchestrator:', error)
     return createErrorResponse(ERROR_TYPES.GENERAL_ERROR, 500)
