@@ -42,7 +42,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
     {
       id: 1,
       type: 'bot',
-      content: cleanBotResponse("Hello! I'm your Cultural AI Assistant, powered by Qloo API and advanced AI models.\n\nCultural AI is a FREE application that helps ALL types of businesses:\n• LOCAL businesses: integrate into their environment, adapt their offering, find product ideas, improve their services, develop marketing strategies\n• INTERNATIONAL businesses: understand foreign cultures, adapt to global markets\n\nFeel free to ask me questions about:\n- How this application works\n- Its varied use cases (local AND international)\n- How cultural AI can transform your business\n- Available features\n\nOnce ready, click the start button for your personalized analysis!"),
+      content: cleanBotResponse("Bonjour ! Je suis votre Assistant IA Culturel, alimenté par l'API Qloo et des modèles d'IA avancés.\n\nCultural AI est une application GRATUITE qui aide TOUS les types d'entreprises :\n• Entreprises LOCALES : s'intégrer dans leur environnement, adapter leur offre, trouver des idées de produits, améliorer leurs services, développer des stratégies marketing\n• Entreprises INTERNATIONALES : comprendre les cultures étrangères, s'adapter aux marchés globaux\n\nN'hésitez pas à me poser des questions sur :\n- Comment fonctionne cette application\n- Ses cas d'usage variés (local ET international)\n- Comment l'IA culturelle peut transformer votre business\n- Les fonctionnalités disponibles\n\nUne fois prêt, cliquez sur le bouton de démarrage pour votre analyse personnalisée !"),
       timestamp: new Date()
     }
   ]);
@@ -275,7 +275,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
                 <div>
                   <h1 className="text-lg font-semibold text-[#111827]">Cultural AI</h1>
                   <p className="text-xs text-[#6B7280]">
-                    {currentAppPhase === 'onboarding' ? 'Discovery Mode' : `Analysis: ${targetLocation} - ${userBusinessType}`}
+                    {currentAppPhase === 'onboarding' ? 'Mode découverte' : `Analyse: ${targetLocation} - ${userBusinessType}`}
                   </p>
                 </div>
               </div>
@@ -397,8 +397,8 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
                     onKeyPress={handleKeyPress}
                     placeholder={
                       currentAppPhase === 'onboarding' 
-                        ? "Ask questions about the application, its features, use cases..."
-                        : "Ask questions about cultural strategies, local preferences..."
+                        ? "Posez vos questions sur l'application, ses fonctionnalités, ses cas d'usage..."
+                        : "Posez vos questions sur les stratégies culturelles, les préférences locales..."
                     }
                     className="w-full bg-transparent text-gray-800 placeholder-gray-500 resize-none outline-none py-2 px-0 min-h-[24px] max-h-[120px] overflow-y-auto"
                     rows={1}
