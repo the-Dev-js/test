@@ -75,19 +75,21 @@ async function getQlooInsights(location: string, businessType: string): Promise<
   }
 
   try {
-    // This is a placeholder for the actual Qloo API call
-    // Replace with actual Qloo API endpoint and parameters
-    const response = await fetch('https://hackathon.api.qloo.com/v1/insights', {
-      method: 'POST',
+    // Build query parameters for the GET request
+    const params = new URLSearchParams({
+      location: location,
+      entity_type: businessType
+    })
+    
+    // Construct the full URL with query parameters
+    const apiUrl = `https://hackathon.api.qloo.com/v2/insights?${params.toString()}`
+    
+    const response = await fetch(apiUrl, {
+      method: 'GET',
       headers: {
-        'Authorization': `Bearer ${qlooApiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        location: location,
-        business_type: businessType,
-        insights_type: 'cultural_preferences'
-      })
+        'X-Api-Key': qlooApiKey,
+        'Content-Type': 'application/json'
+      }
     })
 
     if (!response.ok) {
