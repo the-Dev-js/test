@@ -160,6 +160,8 @@ TONE & STYLE:
 - Be direct and actionable - avoid generic advice
 - Reference the cultural data provided to justify your recommendations
 - Focus on competitive advantages the user can gain through cultural intelligence`
+}
+
 // Enhanced onboarding prompt with clearer instructions
 function buildOnboardingPrompt(message: string, subPhase: string, nextPhase: string): string {
   const basePrompt = `Vous êtes un Assistant d'Intelligence Culturelle aidant les entreprises à s'étendre à l'international. Guidez les utilisateurs à travers notre processus d'onboarding de manière naturelle et conversationnelle.
@@ -237,6 +239,48 @@ async function callGemini(prompt: string): Promise<string> {
     }
   } catch (error) {
     console.error('Error calling Gemini API:', error)
+    throw error
+  }
+}
+
+// Call OpenAI API
+async function callOpenAI(prompt: string): Promise<string> {
+  const openaiApiKey = Deno.env.get('OPENAI_API_KEY')
+  
+  if (!openaiApiKey) {
+    throw new Error('OpenAI API key not configured')
+  }
+
+  try {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${openaiApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'gpt-3.5-turbo',
+        messages: [{ role: 'user', content: prompt }],
+        temperature: 0.7,
+        max_tokens: 1024,
+      })
+    })
+
+    if (!response.ok) {
+      const errorText = await response.text()
+      console.error(`OpenAI API error: ${response.status} - ${errorText}`)
+      throw new Error(`OpenAI API error: ${response.status}`)
+    }
+
+    const data = await response.json()
+    
+    if (data.choices && data.choices[0] && data.choices[0].message) {
+      return data.choices[0].message.content
+    } else {
+      throw new Error('Invalid response format from OpenAI')
+    }
+  } catch (error) {
+    console.error('Error calling OpenAI API:', error)
     throw error
   }
 }
