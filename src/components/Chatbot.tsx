@@ -42,7 +42,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
     {
       id: 1,
       type: 'bot',
-      content: cleanBotResponse("Bonjour ! Je suis votre Assistant IA Culturel, alimenté par l'API Qloo et des modèles d'IA avancés.\n\nJe peux vous aider à comprendre les préférences culturelles, les tendances locales et les opportunités de marché partout dans le monde pour développer votre entreprise avec succès.\n\nN'hésitez pas à me poser des questions sur :\n- Comment fonctionne cette application\n- Quels sont les cas d'usage possibles\n- Comment l'IA culturelle peut vous aider\n- Les fonctionnalités disponibles\n\nUne fois que vous aurez compris le potentiel de l'outil, vous pourrez cliquer sur le bouton de démarrage pour commencer votre analyse personnalisée !"),
+      content: cleanBotResponse("Bonjour ! Je suis votre Assistant IA Culturel, alimenté par l'API Qloo et des modèles d'IA avancés.\n\nCultural AI est une application GRATUITE qui aide TOUS les types d'entreprises :\n• Entreprises LOCALES : s'intégrer dans leur environnement, adapter leur offre, trouver des idées de produits, améliorer leurs services, développer des stratégies marketing\n• Entreprises INTERNATIONALES : comprendre les cultures étrangères, s'adapter aux marchés globaux\n\nN'hésitez pas à me poser des questions sur :\n- Comment fonctionne cette application\n- Ses cas d'usage variés (local ET international)\n- Comment l'IA culturelle peut transformer votre business\n- Les fonctionnalités disponibles\n\nUne fois prêt, cliquez sur le bouton de démarrage pour votre analyse personnalisée !"),
       timestamp: new Date()
     }
   ]);
