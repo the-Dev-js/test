@@ -232,28 +232,6 @@ async function callLLM(prompt: string): Promise<string> {
     console.error('Gemini API failed:', error)
     throw new Error(ERROR_TYPES.LLM_API_ERROR)
   }
-
-  if (geminiApiKey) {
-    try {
-      console.log('Attempting to call Gemini API...')
-      return await callGemini(prompt)
-    } catch (error) {
-      console.error('Gemini API failed, trying OpenAI fallback:', error)
-    }
-  }
-
-  // Fallback to OpenAI
-  if (openaiApiKey) {
-    try {
-      console.log('Attempting to call OpenAI API...')
-      return await callOpenAI(prompt)
-    } catch (error) {
-      console.error('OpenAI API also failed:', error)
-      throw new Error(ERROR_TYPES.LLM_API_ERROR)
-    }
-  }
-
-  throw new Error(ERROR_TYPES.MISSING_API_KEYS)
 }
 
 // Generate onboarding responses with enhanced error handling
