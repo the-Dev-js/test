@@ -77,7 +77,7 @@ async function getQlooInsights(location: string, businessType: string): Promise<
   try {
     // This is a placeholder for the actual Qloo API call
     // Replace with actual Qloo API endpoint and parameters
-    const response = await fetch('https://api.qloo.com/v1/insights', {
+    const response = await fetch('https://hackathon.api.qloo.com/v1/insights', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${qlooApiKey}`,
