@@ -107,7 +107,7 @@ const ContextInputModal: React.FC<ContextInputModalProps> = ({ isOpen, onClose, 
               <div>
                 <label htmlFor="businessType" className="block text-sm font-medium text-gray-700 mb-2">
                   <Building className="w-4 h-4 inline mr-2" />
-                  Type de business
+                  Business type
                 </label>
                 <input
                   id="businessType"
