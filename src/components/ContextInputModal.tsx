@@ -76,10 +76,10 @@ const ContextInputModal: React.FC<ContextInputModalProps> = ({ isOpen, onClose, 
                 <Play className="w-6 h-6 text-white" />
               </div>
               <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                Commencer l'analyse culturelle
+                Start cultural analysis
               </h2>
               <p className="text-gray-600 text-sm">
-                Fournissez ces informations pour obtenir des insights personnalisés
+                Provide this information to get personalized insights.
               </p>
             </div>
 
@@ -89,7 +89,7 @@ const ContextInputModal: React.FC<ContextInputModalProps> = ({ isOpen, onClose, 
               <div>
                 <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-2">
                   <MapPin className="w-4 h-4 inline mr-2" />
-                  Localisation ciblée
+                  current location or target location
                 </label>
                 <input
                   id="location"
