@@ -397,8 +397,8 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
                     onKeyPress={handleKeyPress}
                     placeholder={
                       currentAppPhase === 'onboarding' 
-                        ? "Posez vos questions sur l'application, ses fonctionnalités, ses cas d'usage..."
-                        : "Posez vos questions sur les stratégies culturelles, les préférences locales..."
+                        ? "Ask your questions about the application, its features, its use cases, ..."
+                        : "Ask your questions about cultural strategies, local preferences, ..."
                     }
                     className="w-full bg-transparent text-gray-800 placeholder-gray-500 resize-none outline-none py-2 px-0 min-h-[24px] max-h-[120px] overflow-y-auto"
                     rows={1}
