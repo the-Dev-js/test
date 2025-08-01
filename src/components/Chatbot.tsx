@@ -106,19 +106,19 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
       const transitionMessage: ChatMessage = {
         id: messages.length + 1,
         type: 'bot',
-        content: cleanBotResponse(`Parfait ! J'ai récupéré les insights culturels pour ${location} dans le secteur ${businessType}. Je peux maintenant vous fournir des conseils stratégiques personnalisés basés sur les données culturelles spécifiques à votre marché cible.\n\nVous pouvez me poser des questions comme :\n- Quels produits adapter pour ce marché ?\n- Quelle stratégie d'implantation adopter ?\n- Y a-t-il des préférences culturelles spécifiques à prendre en compte ?\n- Comment adapter ma communication marketing ?\n\nQue souhaitez-vous savoir ?`),
+        content: cleanBotResponse(`Great! I have gathered cultural insights for ${location} in the ${businessType} sector. I can now provide you with personalized strategic advice based on cultural data specific to your target market.\n\nYou can ask me questions such as:\n- Which products should be adapted for this market ?\n- What implementation strategy should be adopted ?\n- Are there any specific cultural preferences to take into account ?\n- How should I adapt my marketing communication ?\n\nWhat would you like to know?`),
         timestamp: new Date()
       };
       
       setMessages(prev => [...prev, transitionMessage]);
       
     } catch (error) {
-      console.error('Erreur lors de la récupération des insights Qloo:', error);
+      console.error('Error retrieving Qloo insights:', error);
       
       const errorMessage: ChatMessage = {
         id: messages.length + 1,
         type: 'bot',
-        content: cleanBotResponse(`Je m'excuse, mais j'ai rencontré un problème lors de la récupération des données culturelles. Cela pourrait être dû à des problèmes de connectivité réseau ou de maintenance du serveur.\n\nVeuillez réessayer dans un moment. Si le problème persiste, vous pouvez toujours me poser des questions générales sur l'intelligence culturelle !`),
+        content: cleanBotResponse(`Error retrieving insights. Please wait a moment or try again later.`),
         timestamp: new Date()
       };
       
@@ -209,7 +209,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
         setOnboardingSubPhase(data.nextPhase as OnboardingSubPhase);
       }
       
-      const cleanedResponse = cleanBotResponse(data.response || 'Désolé, je n\'ai pas pu traiter votre demande pour le moment.');
+      const cleanedResponse = cleanBotResponse(data.response || 'Sorry, I haven\'t been able to process your request yet.');
       
       const botMessage: ChatMessage = {
         id: messages.length + 2,
@@ -226,7 +226,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
       const errorMessage: ChatMessage = {
         id: messages.length + 2,
         type: 'bot',
-        content: cleanBotResponse(`Je m'excuse, mais j'ai des difficultés à me connecter à mes services en ce moment. Cela pourrait être dû à des problèmes de connectivité réseau ou de maintenance du serveur.\n\nVeuillez réessayer dans un moment. Si le problème persiste, vous pouvez toujours me poser des questions générales sur la recherche de marché culturel et je ferai de mon mieux pour vous aider !`),
+        content: cleanBotResponse(`I apologise, but I am having difficulty connecting to my services at the moment. This could be due to network connectivity issues or server maintenance.`),
         timestamp: new Date()
       };
       
@@ -245,8 +245,8 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
 
   const exportToPDF = () => {
     // Placeholder for PDF export functionality
-    console.log('Export de la conversation en PDF...');
-    alert('La fonctionnalité d\'export PDF sera bientôt implémentée !');
+    console.log('Exporting the conversation to PDF...');
+    alert('PDF export functionality will be implemented soon !');
   };
 
   return (
