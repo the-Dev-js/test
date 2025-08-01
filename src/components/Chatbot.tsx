@@ -384,7 +384,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
                   <button 
                     onClick={() => setShowContextModal(true)}
                     className="w-8 h-8 rounded-full flex items-center justify-center text-white bg-gradient-to-r from-[#2563EB] to-[#1877F2] hover:shadow-lg hover:shadow-[#1877F2]/30 flex-shrink-0 transition-all duration-200 hover:scale-105"
-                    title="Commencer l'analyse culturelle"
+                    title="Starting the cultural analysis"
                   >
                     <Play className="w-4 h-4" />
                   </button>
