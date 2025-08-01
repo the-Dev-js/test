@@ -130,12 +130,12 @@ const ContextInputModal: React.FC<ContextInputModalProps> = ({ isOpen, onClose, 
                 {isSubmitting ? (
                   <>
                     <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    <span>Analyse en cours...</span>
+                    <span>Analysis in progress...</span>
                   </>
                 ) : (
                   <>
                     <Play className="w-4 h-4" />
-                    <span>Lancer l'analyse</span>
+                    <span>Start analysis</span>
                   </>
                 )}
               </button>
@@ -144,7 +144,7 @@ const ContextInputModal: React.FC<ContextInputModalProps> = ({ isOpen, onClose, 
             {/* Info */}
             <div className="mt-4 p-3 bg-blue-50 rounded-lg">
               <p className="text-xs text-blue-700 text-center">
-                Ces informations nous permettront de récupérer des insights culturels spécifiques à votre marché cible
+                This information will enable us to gather cultural insights specific to your target market, whether it is in your current or target location 
               </p>
             </div>
           </motion.div>
