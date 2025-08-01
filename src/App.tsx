@@ -12,6 +12,13 @@ import Footer from './components/Footer';
 function App() {
   const [currentView, setCurrentView] = useState<'hero' | 'chatbot'>('hero');
 
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   const handleStartExploring = () => {
     setCurrentView('chatbot');
   };
@@ -23,11 +30,11 @@ function App() {
   return (
     <div className="min-h-screen">
       {currentView === 'hero' && (
-        <Navbar onStartExploring={handleStartExploring} />
+        <Navbar onStartExploring={handleStartExploring} scrollToSection={scrollToSection} />
       )}
       {currentView === 'hero' ? (
         <>
-          <Hero onStartExploring={handleStartExploring} />
+          <Hero onStartExploring={handleStartExploring} scrollToSection={scrollToSection} />
           <ProblemSection />
           <HowItWorksSection />
           <FeaturesSection />

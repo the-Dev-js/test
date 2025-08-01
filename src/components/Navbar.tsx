@@ -4,16 +4,10 @@ import { Sparkles, Menu } from 'lucide-react';
 
 interface NavbarProps {
   onStartExploring: () => void;
+  scrollToSection: (sectionId: string) => void;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ onStartExploring }) => {
-  const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
+const Navbar: React.FC<NavbarProps> = ({ onStartExploring, scrollToSection }) => {
   return (
     <motion.nav
       initial={{ opacity: 0, y: -20 }}
