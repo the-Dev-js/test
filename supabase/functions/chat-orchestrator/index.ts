@@ -164,29 +164,43 @@ TONE & STYLE:
 
 // Enhanced onboarding prompt with clearer instructions
 function buildOnboardingPrompt(message: string, subPhase: string, nextPhase: string): string {
-  const basePrompt = `Vous êtes un Assistant d'Intelligence Culturelle aidant les entreprises à s'étendre à l'international. Guidez les utilisateurs à travers notre processus d'onboarding de manière naturelle et conversationnelle.
+  const basePrompt = `Vous êtes un Assistant d'Intelligence Culturelle spécialisé dans l'aide aux entreprises. Guidez les utilisateurs à travers notre processus d'onboarding de manière naturelle et conversationnelle.
 
+INFORMATIONS CLÉS SUR L'APPLICATION :
+- Cultural AI est une plateforme d'intelligence culturelle GRATUITE alimentée par l'API Qloo et des modèles d'IA avancés (Gemini, GPT)
+- Elle aide les entreprises à comprendre les préférences culturelles, les tendances locales et les opportunités de marché
+- Utilisations possibles :
+  * Expansion internationale : s'implanter dans de nouveaux pays/marchés
+  * Adaptation locale : mieux comprendre et servir sa clientèle actuelle
+  * Marketing ciblé : analyser les hobbies et habitudes pour créer des campagnes qui résonnent
+  * Développement produit : identifier des idées de produits/services alignées avec les préférences culturelles
+  * Image de marque : améliorer son positionnement pour mieux matcher avec sa communauté
+- Fonctionne pour n'importe quelle localisation : pays, régions, villes
+- Secteurs d'activité : restaurants, e-commerce, tech, services, retail, etc.
 Phase actuelle: ${subPhase}
 Prochaine phase: ${nextPhase}
 Message utilisateur: ${message}
 
 Instructions:
-- Soyez chaleureux, professionnel et encourageant
+- Soyez chaleureux, professionnel et encourageant mais évitez de répéter "Bonjour" à chaque message
+- Variez vos introductions ou allez directement au sujet après la première interaction
 - Répondez de manière claire et concise
 - Gardez les réponses courtes (moins de 150 mots)
 - Utilisez un ton conversationnel en français
-- Expliquez les fonctionnalités et cas d'usage de l'application`
+- Expliquez clairement la polyvalence de l'application (usage local ET international)
+- Mentionnez que l'application est entièrement gratuite
+- Donnez des exemples concrets de cas d'usage`
 
   switch (subPhase) {
     case 'initial_question':
       return `${basePrompt}
 
-L'utilisateur vient de poser sa première question. Accueillez-le et expliquez les capacités de l'application Cultural AI. Encouragez-le à poser des questions sur le fonctionnement, les cas d'usage, ou les fonctionnalités.`
+L'utilisateur vient de poser sa première question. Accueillez-le chaleureusement et expliquez les capacités polyvalentes de Cultural AI (usage local ET international). Mettez l'accent sur la gratuité et encouragez-le à poser des questions sur le fonctionnement, les cas d'usage, ou les fonctionnalités.`
 
     case 'explaining_app':
       return `${basePrompt}
 
-L'utilisateur pose des questions sur l'application. Expliquez comment Cultural AI fonctionne, ses cas d'usage (restaurants, e-commerce, startups, etc.), et comment l'IA culturelle peut les aider. Mentionnez qu'ils peuvent cliquer sur le bouton de démarrage quand ils sont prêts pour une analyse personnalisée.`
+L'utilisateur pose des questions sur l'application. Expliquez comment Cultural AI fonctionne, ses multiples cas d'usage (expansion internationale, adaptation locale, marketing, développement produit, image de marque), et comment l'IA culturelle peut les aider. Mentionnez la gratuité et qu'ils peuvent cliquer sur le bouton de démarrage quand ils sont prêts pour une analyse personnalisée.`
 
     default:
       return `${basePrompt}
@@ -384,15 +398,15 @@ function getFallbackOnboardingResponse(subPhase: string, message: string): Onboa
   let response: string
   switch (subPhase) {
     case 'initial_question':
-      response = "Bonjour ! Je suis votre Assistant IA Culturel. Je peux vous expliquer comment cette application fonctionne, quels sont ses cas d'usage, et comment l'intelligence artificielle culturelle peut vous aider dans votre expansion internationale. Que souhaitez-vous savoir ?"
+      response = "Bonjour ! Je suis votre Assistant IA Culturel. Cultural AI est une plateforme gratuite qui aide les entreprises à comprendre les préférences culturelles - que ce soit pour s'implanter à l'étranger ou mieux servir leur clientèle locale. Je peux vous expliquer comment elle fonctionne, ses multiples cas d'usage (marketing, développement produit, image de marque), et comment l'IA culturelle peut transformer votre approche business. Que souhaitez-vous savoir ?"
       break
     
     case 'explaining_app':
-      response = "Cette application utilise l'API Qloo et l'IA Gemini pour vous fournir des insights culturels personnalisés. Elle peut vous aider à comprendre les préférences locales, les tendances culturelles, et les opportunités de marché dans n'importe quel pays. Avez-vous d'autres questions sur son fonctionnement ?"
+      response = "Cultural AI combine l'API Qloo et des modèles d'IA avancés pour analyser les préférences culturelles partout dans le monde. Que vous souhaitiez vous implanter à l'étranger, mieux comprendre votre clientèle locale, créer des campagnes marketing ciblées, ou développer de nouveaux produits, cette plateforme gratuite vous donne les insights culturels nécessaires. Avez-vous d'autres questions sur ses fonctionnalités ?"
       break
     
     default:
-      response = "Je suis là pour vous aider à comprendre les préférences culturelles pour l'expansion internationale des entreprises. Que souhaitez-vous savoir ?"
+      response = "Je suis là pour vous aider à comprendre comment Cultural AI peut transformer votre approche business grâce à l'intelligence culturelle - que ce soit pour l'expansion internationale ou l'adaptation locale. Que souhaitez-vous savoir ?"
       break
   }
   
