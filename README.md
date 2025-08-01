@@ -50,6 +50,25 @@ npm run dev
 5. The enhanced prompt is sent to Gemini for intelligent analysis
 6. The AI response is returned to the user with actionable cultural insights
 
+
+## App Usage Modes
+Cultural Match AI offers two complementary usage modes to suit all user profiles:
+
+ Onboarding Mode (Discovery)
+This mode is designed to onboard first-time users. It provides an interactive and guided experience without calling external data sources. The user can explore the interface, understand the concept of cultural intelligence, and learn what kind of questions to ask. No location or business information is required.
+
+ Advanced Mode (Strategic Analysis)
+This mode unlocks the full potential of the app.
+To access it, the user clicks a dedicated button that triggers a popup, asking them to provide:
+
+A location (city or country)
+
+A business type or sector
+
+Once submitted, the app performs a single fetch request to the Qloo Taste AI API, retrieving relevant cultural insights based on the input. These insights are then processed by Gemini AI to deliver clear, tailored strategic recommendations — such as product localization, culturally relevant marketing suggestions, and new business opportunities.
+
+This dual-mode structure ensures both a gentle learning curve and deep, contextual cultural analysis, tailored to real-world strategic needs.
+
 ## Architecture
 
 ```
