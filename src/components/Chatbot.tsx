@@ -42,7 +42,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
     {
       id: 1,
       type: 'bot',
-      content: cleanBotResponse("Bonjour ! Je suis votre Assistant IA Culturel, alimenté par l'API Qloo et des modèles d'IA avancés.\n\nJe peux vous aider à comprendre les préférences culturelles, les tendances locales et les opportunités de marché partout dans le monde pour développer votre entreprise avec succès.\n\nN'hésitez pas à me poser des questions sur :\n- Comment fonctionne cette application\n- Quels sont les cas d'usage possibles\n- Comment l'IA culturelle peut vous aider\n- Les fonctionnalités disponibles\n\nUne fois que vous aurez compris le potentiel de l'outil, vous pourrez cliquer sur le bouton de démarrage pour commencer votre analyse personnalisée !"),
+      content: cleanBotResponse("Hello! I am your Cultural AI Assistant, powered by the Qloo API and advanced AI models.\n\n I can help you understand cultural preferences, local trends, and market opportunities around the world to successfully grow your business.\n\n Feel free to ask me questions about:\n - How this application works\n - What are the possible use cases?\n- How can cultural AI help you?\n- What features are available?\n\nOnce you understand the tool's potential, you can click the start button to begin your personalized analysis!"),
       timestamp: new Date()
     }
   ]);
