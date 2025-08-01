@@ -210,6 +210,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ onBackToHome }) => {
       }
       
       const cleanedResponse = cleanBotResponse(data.response || 'Sorry, I haven\'t been able to process your request yet.');
+      console.log (data.response);
       
       const botMessage: ChatMessage = {
         id: messages.length + 2,
