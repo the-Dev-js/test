@@ -54,10 +54,10 @@ npm run dev
 ## App Usage Modes
 Cultural Match AI offers two complementary usage modes to suit all user profiles:
 
- Onboarding Mode (Discovery)
+ ### Onboarding Mode (Discovery)
 This mode is designed to onboard first-time users. It provides an interactive and guided experience without calling external data sources. The user can explore the interface, understand the concept of cultural intelligence, and learn what kind of questions to ask. No location or business information is required.
 
- Advanced Mode (Strategic Analysis)
+### Advanced Mode (Strategic Analysis)
 This mode unlocks the full potential of the app.
 To access it, the user clicks a dedicated button that triggers a popup, asking them to provide:
 
